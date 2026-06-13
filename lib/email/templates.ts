@@ -215,3 +215,18 @@ export function loginLinkEmail(opts: { name?: string; loginUrl: string }): {
     html: baseLayout({ title: "الدخول إلى مكتبتي", preview: "رابط الدخول إلى حسابك بالداخل", body }),
   };
 }
+
+// ---------- 5) نشرة بريدية مخصّصة ----------
+export function newsletterEmail(opts: { subject: string; body: string }): { subject: string; html: string } {
+  const paras = opts.body
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p style="margin:0 0 14px;font-size:16px;line-height:2;color:${C.text}">${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`)
+    .join("");
+  const body = `${heading(opts.subject)}${paras}`;
+  return {
+    subject: opts.subject,
+    html: baseLayout({ title: opts.subject, preview: opts.subject.slice(0, 80), body }),
+  };
+}

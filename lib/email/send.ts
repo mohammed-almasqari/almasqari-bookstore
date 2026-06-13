@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import { getSettings } from "../settings";
-import { confirmEmail, deliveryEmail, receiptEmail, loginLinkEmail } from "./templates";
+import { confirmEmail, deliveryEmail, receiptEmail, loginLinkEmail, newsletterEmail } from "./templates";
 
 /**
  * إرسال البريد عبر Resend. تُقرأ المفاتيح والمرسِل من إعدادات لوحة التحكم
@@ -52,6 +52,11 @@ export function sendReceiptEmail(to: string, vars: Parameters<typeof receiptEmai
 
 export function sendLoginLinkEmail(to: string, vars: Parameters<typeof loginLinkEmail>[0]) {
   const { subject, html } = loginLinkEmail(vars);
+  return send(to, subject, html);
+}
+
+export function sendNewsletterEmail(to: string, vars: Parameters<typeof newsletterEmail>[0]) {
+  const { subject, html } = newsletterEmail(vars);
   return send(to, subject, html);
 }
 

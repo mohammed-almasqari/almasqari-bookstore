@@ -4,36 +4,38 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "./Logo";
-import { GiftIcon, MenuIcon, CloseIcon } from "./icons";
+import { GiftIcon, MenuIcon, CloseIcon, HeartIcon, UsersIcon } from "./icons";
 
 const links = [
   { href: "/", label: "الرئيسية" },
   { href: "/books", label: "المكتبة" },
   { href: "/series", label: "السلاسل" },
+  { href: "/blog", label: "المدونة" },
   { href: "/free", label: "كتب مجانية" },
+  { href: "/about", label: "عن المؤلف" },
+];
+const extraMobile = [
   { href: "/wishlist", label: "المفضلة" },
   { href: "/account", label: "مكتبتي" },
-  { href: "/about", label: "عن المؤلف" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
     <header className="sticky top-0 z-50 border-b border-sand-200/70 bg-sand-50/80 backdrop-blur-md">
       <nav className="container-x flex h-[68px] items-center justify-between">
         <Logo />
 
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-1 lg:flex">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className={`rounded-lg px-4 py-2 text-[15px] font-bold transition-colors ${
+              className={`rounded-lg px-3.5 py-2 text-[15px] font-bold transition-colors ${
                 isActive(l.href) ? "text-shield" : "text-ink-soft hover:text-shield"
               }`}
             >
@@ -43,13 +45,19 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link href="/wishlist" aria-label="المفضلة" className="hidden h-10 w-10 place-items-center rounded-xl border border-sand-200 bg-white text-ink-soft hover:text-alert lg:grid">
+            <HeartIcon className="h-5 w-5" />
+          </Link>
+          <Link href="/account" aria-label="مكتبتي" className="hidden h-10 w-10 place-items-center rounded-xl border border-sand-200 bg-white text-ink-soft hover:text-shield lg:grid">
+            <UsersIcon className="h-5 w-5" />
+          </Link>
           <Link href="/free" className="btn-primary hidden h-11 px-5 text-sm sm:inline-flex">
             <GiftIcon className="h-5 w-5" />
             احصل على كتاب مجاني
           </Link>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="grid h-11 w-11 place-items-center rounded-xl border border-sand-200 bg-white text-ink md:hidden"
+            className="grid h-11 w-11 place-items-center rounded-xl border border-sand-200 bg-white text-ink lg:hidden"
             aria-label="القائمة"
           >
             {open ? <CloseIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
@@ -58,9 +66,9 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-sand-200 bg-white md:hidden">
+        <div className="border-t border-sand-200 bg-white lg:hidden">
           <div className="container-x flex flex-col py-3">
-            {links.map((l) => (
+            {[...links, ...extraMobile].map((l) => (
               <Link
                 key={l.href}
                 href={l.href}

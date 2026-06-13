@@ -134,6 +134,22 @@ model Setting {
   updatedAt DateTime @updatedAt
 }
 
+// مقال في المدونة التوعوية
+model Post {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String?
+  content     String    @db.Text
+  coverFile   String?
+  isPublished Boolean   @default(true)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([isPublished])
+}
+
 // تسجيل للحصول على كتاب مجاني (مع تأكيد البريد المزدوج)
 model FreeClaim {
   id           String    @id @default(cuid())

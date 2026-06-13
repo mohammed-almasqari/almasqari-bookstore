@@ -9,16 +9,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let books: { slug: string; updatedAt: Date }[] = [];
   let series: { slug: string; updatedAt: Date }[] = [];
+  let posts: { slug: string; updatedAt: Date }[] = [];
   try {
-    [books, series] = await Promise.all([
+    [books, series, posts] = await Promise.all([
       prisma.book.findMany({ where: { isPublished: true }, select: { slug: true, updatedAt: true } }),
       prisma.series.findMany({ where: { isPublished: true }, select: { slug: true, updatedAt: true } }),
+      prisma.post.findMany({ where: { isPublished: true }, select: { slug: true, updatedAt: true } }),
     ]);
   } catch {
     // قاعدة البيانات غير متاحة وقت البناء
   }
 
-  const staticPages: MetadataRoute.Sitemap = ["", "/books", "/series", "/free"].map((p) => ({
+  const postPages: MetadataRoute.Sitemap = posts.map((p) => ({
+    url: `${base}/blog/${p.slug}`,
+    lastModified: p.updatedAt,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
+  const staticPages: MetadataRoute.Sitemap = ["", "/books", "/series", "/blog", "/free"].map((p) => ({
     url: `${base}${p}`,
     lastModified: new Date(),
     changeFrequency: "weekly",
@@ -39,5 +48,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...staticPages, ...seriesPages, ...bookPages];
+  return [...staticPages, ...seriesPages, ...bookPages, ...postPages];
 }
