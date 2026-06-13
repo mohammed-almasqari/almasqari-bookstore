@@ -31,11 +31,23 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - .env
     environment:
-      # داخل شبكة compose يكون مضيف قاعدة البيانات هو اسم الخدمة "db"
+      # تُضبط هذه القيم في Coolify (Environment Variables) وتُمرّر للحاوية عبر الاستبدال.
+      # داخل شبكة compose يكون مضيف قاعدة البيانات هو اسم الخدمة "db".
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public"
+      AUTH_SECRET: ${AUTH_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_NAME: ${ADMIN_NAME}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      NEXT_PUBLIC_SITE_NAME: ${NEXT_PUBLIC_SITE_NAME}
+      NEXT_PUBLIC_CURRENCY: ${NEXT_PUBLIC_CURRENCY}
+      PAYPAL_ENV: ${PAYPAL_ENV}
+      NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${NEXT_PUBLIC_PAYPAL_CLIENT_ID}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      EMAIL_FROM: ${EMAIL_FROM}
+      EMAIL_REPLY_TO: ${EMAIL_REPLY_TO}
       UPLOAD_DIR: /app/uploads
     volumes:
       - uploads_data:/app/uploads
