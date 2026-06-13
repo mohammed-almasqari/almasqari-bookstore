@@ -61,7 +61,14 @@ export default async function OrdersPage() {
                       {o.bankReference && <div className="text-xs text-ink-muted">مرجع: {o.bankReference}</div>}
                     </td>
                     <td className="p-4 text-ink-soft">{o.book.title}</td>
-                    <td className="p-4 tnum font-bold text-ink">{formatPrice(o.amountCents, o.currency)}</td>
+                    <td className="p-4 tnum font-bold text-ink">
+                      {formatPrice(o.amountCents, o.currency)}
+                      {o.discountCents > 0 && (
+                        <div dir="ltr" className="mt-0.5 text-right text-[11px] font-bold text-safe">
+                          {o.couponCode ? `${o.couponCode} ` : ""}−{formatPrice(o.discountCents, o.currency)}
+                        </div>
+                      )}
+                    </td>
                     <td className="p-4">
                       <span className={`badge ${o.paymentMethod === "BANK" ? "bg-steel/10 text-steel" : "bg-shield/10 text-guard"}`}>
                         {o.paymentMethod === "BANK" ? "تحويل بنكي" : "PayPal"}

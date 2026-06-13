@@ -104,6 +104,11 @@ enum PaymentMethod {
   BANK
 }
 
+enum CouponType {
+  PERCENT // خصم نسبة مئوية (value = 1..100)
+  FIXED   // خصم مبلغ ثابت بالسنت (value = عدد السنتات)
+}
+
 // طلب شراء (PayPal أو تحويل بنكي)
 model Order {
   id              String        @id @default(cuid())
@@ -118,6 +123,9 @@ model Order {
   paypalOrderId   String?       @unique
   paypalCaptureId String?
   bankReference   String? // مرجع/ملاحظة التحويل البنكي من العميل
+  couponCode      String? // رمز الكوبون المطبَّق (إن وُجد)
+  discountCents   Int           @default(0) // قيمة الخصم المطبّق بالسنت
+  referralCode    String? // رمز الإحالة الذي جاء عبره الطلب (إن وُجد)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -132,6 +140,24 @@ model Setting {
   key       String   @id
   value     String   @db.Text
   updatedAt DateTime @updatedAt
+}
+
+// كوبون خصم يطبّقه العميل عند الشراء (PayPal أو تحويل بنكي)
+model Coupon {
+  id          String     @id @default(cuid())
+  code        String     @unique // يُخزَّن بأحرف كبيرة
+  description String? // وصف داخلي اختياري للمدير
+  type        CouponType @default(PERCENT)
+  value       Int // نسبة مئوية (1-100) أو مبلغ ثابت بالسنت
+  active      Boolean    @default(true)
+  maxUses     Int? // فارغ = غير محدود
+  usedCount   Int        @default(0)
+  minCents    Int        @default(0) // أدنى مبلغ طلب لتفعيل الكوبون (بالسنت)
+  expiresAt   DateTime? // فارغ = لا تنتهي
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([active])
 }
 
 // مقال في المدونة التوعوية

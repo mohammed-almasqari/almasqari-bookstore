@@ -14,13 +14,15 @@ type Props = {
   currency: string;
   clientId: string;
   priceLabel: string;
+  coupon?: string;
+  refCode?: string;
 };
 
 function isValidEmail(s: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
-export default function BuyButton({ bookId, title, amount, currency, clientId, priceLabel }: Props) {
+export default function BuyButton({ bookId, title, amount, currency, clientId, priceLabel, coupon, refCode }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [touched, setTouched] = useState(false);
@@ -108,7 +110,7 @@ export default function BuyButton({ bookId, title, amount, currency, clientId, p
               const res = await fetch("/api/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ bookId, name, email }),
+                body: JSON.stringify({ bookId, name, email, coupon, ref: refCode }),
               });
               const data = await res.json();
               if (!res.ok || !data.paypalOrderId) {

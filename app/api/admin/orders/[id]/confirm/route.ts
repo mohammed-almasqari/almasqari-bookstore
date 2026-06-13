@@ -5,6 +5,7 @@ import { createDownloadToken } from "@/lib/tokens";
 import { absoluteUrl } from "@/lib/env";
 import { formatPrice, formatDate } from "@/lib/format";
 import { sendReceiptEmail, sendDeliveryEmail } from "@/lib/email/send";
+import { incrementCouponUse } from "@/lib/coupons";
 
 export const dynamic = "force-dynamic";
 const EXPIRY_DAYS = 30;
@@ -23,6 +24,9 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
     data: { status: "PAID" },
     include: { book: true },
   });
+
+  // تثبيت استخدام الكوبون بعد تأكيد التحويل
+  await incrementCouponUse(updated.couponCode);
 
   const dl = await createDownloadToken({
     bookId: updated.bookId,

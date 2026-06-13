@@ -144,3 +144,41 @@ export const SpinnerIcon = (p: P) => (
     <path d="M12 3a9 9 0 109 9" />
   </svg>
 );
+export const TagIcon = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M3 12V5a2 2 0 012-2h7l9 9-7 7-9-9z" />
+    <circle cx="8" cy="8" r="1.6" fill="currentColor" stroke="none" />
+  </svg>
+);
+export const LayersIcon = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12 3l9 5-9 5-9-5 9-5z" />
+    <path d="M3 12l9 5 9-5" />
+    <path d="M3 16l9 5 9-5" />
+  </svg>
+);
+export const ShareIcon = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="6" cy="12" r="2.4" />
+    <circle cx="18" cy="6" r="2.4" />
+    <circle cx="18" cy="18" r="2.4" />
+    <path d="M8.1 10.9l7.8-3.8M8.1 13.1l7.8 3.8" />
+  </svg>
+);
+export const SunIcon = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+  </svg>
+);
+export const MoonIcon = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M20 14.5A8 8 0 119.5 4a6.5 6.5 0 0010.5 10.5z" />
+  </svg>
+);
+export const CopyIcon = (p: P) => (
+  <svg {...base(p)}>
+    <rect x="9" y="9" width="11" height="11" rx="2" />
+    <path d="M5 15V5a2 2 0 012-2h8" />
+  </svg>
+);

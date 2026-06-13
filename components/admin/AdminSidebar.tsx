@@ -17,6 +17,7 @@ import {
   StarIcon,
   EditIcon,
   MailIcon,
+  TagIcon,
 } from "@/components/icons";
 
 const nav = [
@@ -25,6 +26,7 @@ const nav = [
   { href: "/admin/series", label: "السلاسل", icon: GridIcon },
   { href: "/admin/blog", label: "المدونة", icon: EditIcon },
   { href: "/admin/orders", label: "الطلبات", icon: ReceiptIcon },
+  { href: "/admin/coupons", label: "كوبونات الخصم", icon: TagIcon },
   { href: "/admin/reviews", label: "التقييمات", icon: StarIcon },
   { href: "/admin/subscribers", label: "المشتركون", icon: UsersIcon },
   { href: "/admin/newsletter", label: "النشرة البريدية", icon: MailIcon },

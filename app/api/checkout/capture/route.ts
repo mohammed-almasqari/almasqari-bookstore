@@ -6,6 +6,7 @@ import { createDownloadToken } from "@/lib/tokens";
 import { absoluteUrl } from "@/lib/env";
 import { formatPrice, formatDate } from "@/lib/format";
 import { sendReceiptEmail, sendDeliveryEmail } from "@/lib/email/send";
+import { incrementCouponUse } from "@/lib/coupons";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,9 @@ export async function POST(req: NextRequest) {
       data: { status: "PAID", paypalCaptureId: capture.captureId },
       include: { book: true },
     });
+
+    // تثبيت استخدام الكوبون بعد اكتمال الدفع فعليًا
+    await incrementCouponUse(updated.couponCode);
 
     const dl = await createDownloadToken({
       bookId: updated.bookId,
