@@ -10,6 +10,7 @@ const links = [
   { href: "/", label: "الرئيسية" },
   { href: "/books", label: "المكتبة" },
   { href: "/free", label: "كتب مجانية" },
+  { href: "/account", label: "مكتبتي" },
   { href: "/#about", label: "عن المؤلف" },
 ];
 

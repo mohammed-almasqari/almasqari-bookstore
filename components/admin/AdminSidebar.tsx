@@ -12,6 +12,7 @@ import {
   LogoutIcon,
   MenuIcon,
   CloseIcon,
+  SettingsIcon,
 } from "@/components/icons";
 
 const nav = [
@@ -19,6 +20,7 @@ const nav = [
   { href: "/admin/books", label: "الكتب", icon: BookIcon },
   { href: "/admin/orders", label: "الطلبات", icon: ReceiptIcon },
   { href: "/admin/subscribers", label: "المشتركون", icon: UsersIcon },
+  { href: "/admin/settings", label: "الإعدادات", icon: SettingsIcon },
 ];
 
 export default function AdminSidebar({ name }: { name: string }) {

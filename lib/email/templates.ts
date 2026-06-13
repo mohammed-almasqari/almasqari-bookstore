@@ -195,3 +195,23 @@ export function receiptEmail(opts: {
     html: baseLayout({ title: "إيصال الشراء", preview: `تأكيد شراء ${opts.bookTitle}`, body }),
   };
 }
+
+// ---------- 4) رابط الدخول إلى حساب العميل (مكتبتي) ----------
+export function loginLinkEmail(opts: { name?: string; loginUrl: string }): {
+  subject: string;
+  html: string;
+} {
+  const greet = opts.name ? `مرحبًا ${escapeHtml(opts.name)}` : "مرحبًا";
+  const body = `
+    ${heading("رابط الدخول إلى مكتبتك 🔑")}
+    ${paragraph(`${greet}، اضغط الزر التالي للدخول إلى حسابك وعرض كتبك المشتراة والمجانية وتحميلها:`)}
+    ${button(opts.loginUrl, "الدخول إلى مكتبتي")}
+    ${paragraph(`<span style="font-size:13.5px;color:${C.muted}">هذا الرابط صالح لمدة ساعة واحدة ولمرة واحدة. إن لم تطلبه، تجاهل هذه الرسالة.</span>`)}
+    ${paragraph(`<span style="font-size:12.5px;color:${C.muted}">أو انسخ هذا الرابط:</span><br/>
+      <a href="${opts.loginUrl}" style="font-size:12px;word-break:break-all;">${escapeHtml(opts.loginUrl)}</a>`)}
+  `;
+  return {
+    subject: "رابط الدخول إلى مكتبتك",
+    html: baseLayout({ title: "الدخول إلى مكتبتي", preview: "رابط الدخول إلى حسابك بالداخل", body }),
+  };
+}

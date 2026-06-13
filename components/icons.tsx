@@ -126,6 +126,14 @@ export const GiftIcon = (p: P) => (
     <path d="M12 9S10.5 4.5 8 6c-2 1.2 0 3 4 3zM12 9s1.5-4.5 4-3c2 1.2 0 3-4 3z" />
   </svg>
 );
+export const SettingsIcon = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 7h8M16 7h4" />
+    <circle cx="14" cy="7" r="2.2" />
+    <path d="M4 17h4M12 17h8" />
+    <circle cx="10" cy="17" r="2.2" />
+  </svg>
+);
 export const SpinnerIcon = (p: P) => (
   <svg {...base(p)} className={`animate-spin ${p.className ?? ""}`}>
     <path d="M12 3a9 9 0 109 9" />

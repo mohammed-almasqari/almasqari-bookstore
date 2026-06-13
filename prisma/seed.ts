@@ -15,9 +15,10 @@ async function main() {
 
   const passwordHash = await bcrypt.hash(adminPass, 12);
 
+  // عند التحديث لا نلمس كلمة المرور حتى تبقى التغييرات من لوحة التحكم محفوظة عبر عمليات النشر
   await prisma.adminUser.upsert({
     where: { email: adminEmail },
-    update: { name: adminName, passwordHash },
+    update: { name: adminName },
     create: { email: adminEmail, name: adminName, passwordHash },
   });
   console.log(`✓ حساب المدير جاهز: ${adminEmail}`);
