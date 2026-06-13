@@ -46,6 +46,7 @@ export default async function EditBookPage({ params }: { params: { id: string } 
           seriesOrder: book.seriesOrder,
           coverFile: book.coverFile,
           bookFile: book.bookFile,
+          guideFile: book.guideFile,
         }}
       />
     </div>

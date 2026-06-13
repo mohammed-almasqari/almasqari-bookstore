@@ -18,7 +18,7 @@ function errorPage(title: string, message: string, status: number) {
   return new NextResponse(html, { status, headers: { "Content-Type": "text/html; charset=utf-8" } });
 }
 
-export async function GET(_req: NextRequest, { params }: { params: { token: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { token: string } }) {
   const dl = await prisma.downloadToken.findUnique({
     where: { token: params.token },
     include: { book: true },
@@ -33,13 +33,19 @@ export async function GET(_req: NextRequest, { params }: { params: { token: stri
   if (dl.downloadCount >= dl.maxDownloads) {
     return errorPage("تجاوزت حد التحميل", "تم الوصول للحد الأقصى لعدد مرات التحميل لهذا الرابط.", 429);
   }
-  if (!dl.book.bookFile) {
-    return errorPage("الكتاب قيد التجهيز", "ملف الكتاب لم يُرفع بعد. سيصلك فور جهوزيته بإذن الله.", 409);
+
+  // ملف الكتاب أو دليل القراءة المرفق (?type=guide)
+  const wantGuide = req.nextUrl.searchParams.get("type") === "guide";
+  const targetFile = wantGuide ? dl.book.guideFile : dl.book.bookFile;
+  const label = wantGuide ? "دليل القراءة" : "الكتاب";
+
+  if (!targetFile) {
+    return errorPage(`${label} قيد التجهيز`, `ملف ${label} لم يُرفع بعد. سيصلك فور جهوزيته بإذن الله.`, 409);
   }
 
   let buffer: Buffer;
   try {
-    buffer = await readBookFile(dl.book.bookFile);
+    buffer = await readBookFile(targetFile);
   } catch {
     return errorPage("تعذّر الوصول للملف", "حدث خطأ أثناء جلب الملف. يرجى المحاولة لاحقًا.", 500);
   }
@@ -50,14 +56,15 @@ export async function GET(_req: NextRequest, { params }: { params: { token: stri
     data: { downloadCount: { increment: 1 } },
   });
 
-  const ext = path.extname(dl.book.bookFile) || ".pdf";
-  const safeName = encodeURIComponent(`${dl.book.title}${ext}`);
+  const ext = path.extname(targetFile) || ".pdf";
+  const namePrefix = wantGuide ? "دليل قراءة - " : "";
+  const safeName = encodeURIComponent(`${namePrefix}${dl.book.title}${ext}`);
 
   return new NextResponse(buffer, {
     status: 200,
     headers: {
-      "Content-Type": contentTypeFor(dl.book.bookFile),
-      "Content-Disposition": `attachment; filename="book${ext}"; filename*=UTF-8''${safeName}`,
+      "Content-Type": contentTypeFor(targetFile),
+      "Content-Disposition": `attachment; filename="${wantGuide ? "guide" : "book"}${ext}"; filename*=UTF-8''${safeName}`,
       "Content-Length": String(buffer.length),
       "Cache-Control": "private, no-store",
     },

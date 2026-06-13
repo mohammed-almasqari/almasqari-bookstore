@@ -44,14 +44,16 @@ export async function POST(req: NextRequest) {
       dl = await createDownloadToken({ bookId, email, freeClaimId: existing.id, days: 30 });
     }
     const downloadUrl = absoluteUrl(`/api/download/${dl.token}`);
+    const guideUrl = book.guideFile ? absoluteUrl(`/api/download/${dl.token}?type=guide`) : undefined;
     await sendDeliveryEmail(email, {
       name: existing.name,
       bookTitle: book.title,
       downloadUrl,
       expiresLabel: "30 يومًا",
       paid: false,
+      guideUrl,
     });
-    return NextResponse.json({ ok: true, resent: true, ...(instant ? { downloadUrl } : {}) });
+    return NextResponse.json({ ok: true, resent: true, ...(instant ? { downloadUrl, guideUrl } : {}) });
   }
 
   // التسليم الفوري: نعتبر التسجيل تأكيدًا ونرسل الكتاب مباشرة + نعيد رابط التحميل للعرض الفوري
@@ -75,14 +77,16 @@ export async function POST(req: NextRequest) {
         });
     const dl = await createDownloadToken({ bookId, email, freeClaimId: claim.id, days: 30 });
     const downloadUrl = absoluteUrl(`/api/download/${dl.token}`);
+    const guideUrl = book.guideFile ? absoluteUrl(`/api/download/${dl.token}?type=guide`) : undefined;
     await sendDeliveryEmail(email, {
       name,
       bookTitle: book.title,
       downloadUrl,
       expiresLabel: "30 يومًا",
       paid: false,
+      guideUrl,
     });
-    return NextResponse.json({ ok: true, downloadUrl });
+    return NextResponse.json({ ok: true, downloadUrl, guideUrl });
   }
 
   // تسجيل جديد أو غير مؤكَّد — أرسل رابط التأكيد

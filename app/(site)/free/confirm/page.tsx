@@ -39,6 +39,7 @@ async function confirmClaim(token: string) {
   }
 
   const downloadUrl = absoluteUrl(`/api/download/${dl.token}`);
+  const guideUrl = claim.book.guideFile ? absoluteUrl(`/api/download/${dl.token}?type=guide`) : undefined;
 
   if (firstTime) {
     await sendDeliveryEmail(claim.email, {
@@ -47,6 +48,7 @@ async function confirmClaim(token: string) {
       downloadUrl,
       expiresLabel: `${EXPIRY_DAYS} يومًا`,
       paid: false,
+      guideUrl,
     });
   }
 
@@ -56,6 +58,7 @@ async function confirmClaim(token: string) {
     bookTitle: claim.book.title,
     hasFile: !!claim.book.bookFile,
     downloadUrl,
+    guideUrl,
   };
 }
 
@@ -80,9 +83,16 @@ export default async function ConfirmPage({ searchParams }: { searchParams: { to
             </p>
 
             {result.hasFile ? (
-              <a href={result.downloadUrl} className="btn-safe mt-7 w-full" target="_blank" rel="noopener noreferrer">
-                <DownloadIcon className="h-5 w-5" /> تحميل الكتاب الآن
-              </a>
+              <>
+                <a href={result.downloadUrl} className="btn-safe mt-7 w-full" target="_blank" rel="noopener noreferrer">
+                  <DownloadIcon className="h-5 w-5" /> تحميل الكتاب الآن
+                </a>
+                {result.guideUrl && (
+                  <a href={result.guideUrl} className="btn-ghost mt-3 w-full" target="_blank" rel="noopener noreferrer">
+                    <DownloadIcon className="h-5 w-5" /> تحميل دليل القراءة
+                  </a>
+                )}
+              </>
             ) : (
               <div className="mt-7 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-800">
                 سيتوفّر ملف الكتاب للتحميل قريبًا جدًا، وسنرسله إلى بريدك فور جهوزيته.

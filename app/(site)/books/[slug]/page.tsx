@@ -113,6 +113,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
     ["حجم الملف", formatBytes(book.fileSize)],
     ["اللغة", book.language === "ar" ? "العربية" : book.language],
   ];
+  if (book.guideFile) facts.push(["المرفقات", "دليل القراءة"]);
 
   const ClaimBox = (
     <div id="claim" className="scroll-mt-24 rounded-3xl border border-sand-200 bg-surface p-6 shadow-card sm:p-7">
@@ -151,10 +152,16 @@ export default async function BookPage({ params }: { params: { slug: string } })
           />
         </>
       )}
+      {book.guideFile && (
+        <div className="mt-4 flex items-center gap-2 rounded-xl border border-steel/30 bg-steel/5 p-3 text-sm font-bold text-steel">
+          <BookIcon className="h-5 w-5 shrink-0" /> يشمل أيضًا «دليل القراءة» مرفقًا مجانًا
+        </div>
+      )}
       <ul className="mt-5 space-y-2 border-t border-sand-100 pt-4 text-sm font-bold text-ink-soft">
         <li className="flex items-center gap-2"><DownloadIcon className="h-4 w-4 text-steel" /> تحميل فوري بعد التسجيل</li>
         <li className="flex items-center gap-2"><LockIcon className="h-4 w-4 text-safe" /> رابط تحميل آمن ومؤقت</li>
         <li className="flex items-center gap-2"><CheckIcon className="h-4 w-4 text-shield" /> نسخة أصلية بصيغة PDF</li>
+        {book.guideFile && <li className="flex items-center gap-2"><BookIcon className="h-4 w-4 text-guard" /> دليل قراءة مرفق مع الكتاب</li>}
       </ul>
     </div>
   );

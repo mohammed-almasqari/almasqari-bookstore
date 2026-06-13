@@ -17,7 +17,7 @@ export default function InstantClaimForm({ bookId, title }: { bookId: string; ti
   const [optIn, setOptIn] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ downloadUrl?: string } | null>(null);
+  const [done, setDone] = useState<{ downloadUrl?: string; guideUrl?: string } | null>(null);
 
   const ok = name.trim().length >= 2 && isValidEmail(email);
 
@@ -37,7 +37,7 @@ export default function InstantClaimForm({ bookId, title }: { bookId: string; ti
         setError(data.error || "تعذّر إتمام التسجيل. حاول مرة أخرى.");
         return;
       }
-      setDone({ downloadUrl: data.downloadUrl });
+      setDone({ downloadUrl: data.downloadUrl, guideUrl: data.guideUrl });
     } catch {
       setError("حدث خطأ في الشبكة. تحقّق من اتصالك وحاول مجددًا.");
     } finally {
@@ -59,6 +59,11 @@ export default function InstantClaimForm({ bookId, title }: { bookId: string; ti
         {done.downloadUrl && (
           <a href={done.downloadUrl} target="_blank" rel="noopener noreferrer" className="btn-safe mt-5 w-full">
             <DownloadIcon className="h-5 w-5" /> تحميل «{title}» الآن
+          </a>
+        )}
+        {done.guideUrl && (
+          <a href={done.guideUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost mt-3 w-full">
+            <DownloadIcon className="h-5 w-5" /> تحميل دليل القراءة المرفق
           </a>
         )}
         <p className="mt-4 text-xs text-ink-muted">لم تجد البريد؟ تحقّق من مجلد «الرسائل غير المرغوبة» (Spam).</p>

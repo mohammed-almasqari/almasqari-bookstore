@@ -18,6 +18,7 @@ type Owned = {
   date: Date;
   amountCents?: number;
   currency?: string;
+  hasGuide?: boolean;
 };
 
 async function getLibrary(email: string): Promise<Owned[]> {
@@ -45,6 +46,7 @@ async function getLibrary(email: string): Promise<Owned[]> {
       date: o.createdAt,
       amountCents: o.amountCents,
       currency: o.currency,
+      hasGuide: !!o.book.guideFile,
     });
   }
   for (const c of claims) {
@@ -56,6 +58,7 @@ async function getLibrary(email: string): Promise<Owned[]> {
         coverFile: c.book.coverFile,
         kind: "free",
         date: c.createdAt,
+        hasGuide: !!c.book.guideFile,
       });
     }
   }
@@ -141,9 +144,16 @@ export default async function AccountPage({ searchParams }: { searchParams: { er
                 </div>
                 <h3 className="mt-2 font-display text-base font-extrabold leading-snug text-ink line-clamp-2">{b.title}</h3>
                 <p className="mt-0.5 text-xs text-ink-muted">{formatDate(b.date)}</p>
-                <a href={`/api/account/download/${b.bookId}`} className="btn-safe mt-auto h-10 px-4 text-sm">
-                  <DownloadIcon className="h-4 w-4" /> تحميل
-                </a>
+                <div className="mt-auto flex flex-col gap-2 pt-2">
+                  <a href={`/api/account/download/${b.bookId}`} className="btn-safe h-10 px-4 text-sm">
+                    <DownloadIcon className="h-4 w-4" /> تحميل الكتاب
+                  </a>
+                  {b.hasGuide && (
+                    <a href={`/api/account/download/${b.bookId}?type=guide`} className="btn-ghost h-9 px-4 text-xs">
+                      <DownloadIcon className="h-3.5 w-3.5" /> دليل القراءة
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           ))}

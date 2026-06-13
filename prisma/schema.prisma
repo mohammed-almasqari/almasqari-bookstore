@@ -39,6 +39,9 @@ model Book {
   coverFile   String?
   bookFile    String?
   fileSize    Int? // بالبايت
+  // دليل القراءة المرفق (ملف ثانٍ يُسلَّم مع الكتاب)
+  guideFile   String?
+  guideSize   Int? // بالبايت
   pages       Int?
   language    String   @default("ar")
   category    String?

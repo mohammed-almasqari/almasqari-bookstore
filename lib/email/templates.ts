@@ -10,6 +10,7 @@ const C = {
   shield: "#D97706",
   shieldLight: "#F59E0B",
   safe: "#059669",
+  steel: "#0369A1",
   text: "#2A2640",
   muted: "#6B6880",
   border: "#ECE7DD",
@@ -147,14 +148,19 @@ export function deliveryEmail(opts: {
   downloadUrl: string;
   expiresLabel: string;
   paid?: boolean;
+  guideUrl?: string;
 }): { subject: string; html: string } {
   const intro = opts.paid
     ? `تم تأكيد عملية الشراء بنجاح، وهذه نسختك من كتاب`
     : `تم تأكيد بريدك بنجاح، وهذه نسختك المجانية من كتاب`;
+  const guideBlock = opts.guideUrl
+    ? `${paragraph(`<span style="font-size:14.5px;color:${C.text}">ومرفقٌ مع كتابك <b style="color:${C.ink}">دليل القراءة</b> ليعينك على تحقيق أقصى استفادة:</span>`)}${button(opts.guideUrl, "تحميل دليل القراءة", C.steel)}`
+    : "";
   const body = `
     ${heading(`نسختك جاهزة للتحميل 📘`)}
     ${paragraph(`${escapeHtml(opts.name)}، ${intro} <b style="color:${C.ink}">«${escapeHtml(opts.bookTitle)}»</b>.`)}
     ${button(opts.downloadUrl, "تحميل الكتاب الآن", C.safe)}
+    ${guideBlock}
     ${infoCard([
       ["صيغة الملف", "PDF"],
       ["صلاحية الرابط", opts.expiresLabel],

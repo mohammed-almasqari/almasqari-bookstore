@@ -16,7 +16,7 @@ type FulfillableOrder = {
   amountCents: number;
   currency: string;
   createdAt: Date;
-  book: { title: string };
+  book: { title: string; guideFile?: string | null };
   series?: { title: string } | null;
 };
 
@@ -66,6 +66,7 @@ export async function fulfillOrder(order: FulfillableOrder): Promise<string> {
   // كتاب مفرد
   const dl = await createDownloadToken({ bookId: order.bookId, email: order.customerEmail, orderId: order.id, days: EXPIRY_DAYS });
   const downloadUrl = absoluteUrl(`/api/download/${dl.token}`);
+  const guideUrl = order.book.guideFile ? absoluteUrl(`/api/download/${dl.token}?type=guide`) : undefined;
 
   await Promise.allSettled([
     sendReceiptEmail(order.customerEmail, {
@@ -82,6 +83,7 @@ export async function fulfillOrder(order: FulfillableOrder): Promise<string> {
       downloadUrl,
       expiresLabel,
       paid: true,
+      guideUrl,
     }),
   ]);
 

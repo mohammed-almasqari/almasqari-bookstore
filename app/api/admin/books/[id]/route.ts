@@ -72,6 +72,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       data.bookFile = saved.filename;
       data.fileSize = saved.size;
     }
+    const newGuide = fdFile(fd, "guide");
+    if (newGuide) {
+      await deleteBookFile(book.guideFile);
+      const savedGuide = await saveBookFile(newGuide);
+      data.guideFile = savedGuide.filename;
+      data.guideSize = savedGuide.size;
+    }
   } catch (e) {
     console.error("[admin/books PATCH] upload error:", e);
     return NextResponse.json({ error: "تعذّر رفع الملفات." }, { status: 500 });
@@ -86,6 +93,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   if (!book) return NextResponse.json({ error: "الكتاب غير موجود." }, { status: 404 });
 
   await deleteBookFile(book.bookFile);
+  await deleteBookFile(book.guideFile);
   await deleteCoverFile(book.coverFile);
   await prisma.book.delete({ where: { id: book.id } });
 

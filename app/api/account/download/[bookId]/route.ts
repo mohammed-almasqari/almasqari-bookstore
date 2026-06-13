@@ -7,11 +7,12 @@ import { absoluteUrl } from "@/lib/env";
 export const dynamic = "force-dynamic";
 
 // يتحقق من ملكية العميل للكتاب ثم يولّد رابط تحميل آمن ويحوّل إليه
-export async function GET(_req: NextRequest, { params }: { params: { bookId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { bookId: string } }) {
   const email = await getCustomerEmail();
   if (!email) return NextResponse.redirect(absoluteUrl("/account"));
 
   const bookId = params.bookId;
+  const wantGuide = req.nextUrl.searchParams.get("type") === "guide";
 
   const [order, claim] = await Promise.all([
     prisma.order.findFirst({ where: { bookId, customerEmail: email, status: "PAID" } }),
@@ -31,5 +32,5 @@ export async function GET(_req: NextRequest, { params }: { params: { bookId: str
     maxDownloads: 5,
   });
 
-  return NextResponse.redirect(absoluteUrl(`/api/download/${dl.token}`));
+  return NextResponse.redirect(absoluteUrl(`/api/download/${dl.token}${wantGuide ? "?type=guide" : ""}`));
 }

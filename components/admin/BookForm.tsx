@@ -27,6 +27,7 @@ export type BookFormData = {
   copyright?: string | null;
   coverFile?: string | null;
   bookFile?: string | null;
+  guideFile?: string | null;
 };
 
 function Switch({
@@ -171,6 +172,14 @@ export default function BookForm({
                 {initial?.coverFile && (
                   <p className="mt-1.5 flex items-center gap-1 text-xs text-safe"><CheckIcon className="h-3.5 w-3.5" /> غلاف مرفوع حاليًا</p>
                 )}
+              </div>
+              <div>
+                <label className="label">دليل القراءة (PDF) — اختياري</label>
+                <input name="guide" type="file" accept=".pdf,.epub,.zip" className="input file:ml-3 file:rounded-lg file:border-0 file:bg-steel file:px-3 file:py-1.5 file:text-white" />
+                {initial?.guideFile && (
+                  <p className="mt-1.5 flex items-center gap-1 text-xs text-safe"><CheckIcon className="h-3.5 w-3.5" /> دليل مرفوع حاليًا</p>
+                )}
+                <p className="mt-1 text-xs text-ink-muted">ملف مرافق يُسلَّم مع الكتاب (مثل دليل القراءة).</p>
               </div>
             </div>
             <p className="mt-3 text-xs text-ink-muted">الحد الأقصى للملف 60 ميغابايت. في وضع التعديل، اترك الحقل فارغًا للإبقاء على الملف الحالي.</p>

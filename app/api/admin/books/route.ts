@@ -42,6 +42,8 @@ export async function POST(req: NextRequest) {
   let coverFile: string | undefined;
   let bookFile: string | undefined;
   let fileSize: number | undefined;
+  let guideFile: string | undefined;
+  let guideSize: number | undefined;
 
   try {
     const cover = file(fd, "cover");
@@ -51,6 +53,12 @@ export async function POST(req: NextRequest) {
       const saved = await saveBookFile(book);
       bookFile = saved.filename;
       fileSize = saved.size;
+    }
+    const guide = file(fd, "guide");
+    if (guide) {
+      const savedGuide = await saveBookFile(guide);
+      guideFile = savedGuide.filename;
+      guideSize = savedGuide.size;
     }
   } catch (e) {
     console.error("[admin/books] upload error:", e);
@@ -81,6 +89,8 @@ export async function POST(req: NextRequest) {
       coverFile,
       bookFile,
       fileSize,
+      guideFile,
+      guideSize,
       language: "ar",
     },
   });
