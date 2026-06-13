@@ -3,6 +3,7 @@ import { env } from "@/lib/env";
 import { getSettingsForAdmin } from "@/lib/settings";
 import PasswordForm from "@/components/admin/PasswordForm";
 import SettingsForms from "@/components/admin/SettingsForms";
+import EmailDomainSetup from "@/components/admin/EmailDomainSetup";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الإعدادات" };
@@ -19,6 +20,9 @@ export default async function SettingsPage() {
 
       {/* الدفع والبريد */}
       <SettingsForms initial={settings} />
+
+      {/* توثيق نطاق البريد */}
+      <EmailDomainSetup />
 
       {/* حساب المدير */}
       <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
