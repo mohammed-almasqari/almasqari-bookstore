@@ -53,8 +53,8 @@ function SeriesItem({ s }: { s: SeriesRow }) {
         <div className="text-xs text-ink-muted">{s.bookCount} كتب · /series/{s.slug}{!s.isPublished && " · غير منشورة"}</div>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <div className="flex items-center gap-1.5 rounded-xl border border-sand-200 bg-sand-50 px-3 py-1.5">
-          <LayersIcon className="h-4 w-4 text-shield" title="سعر الحزمة" />
+        <div className="flex items-center gap-1.5 rounded-xl border border-sand-200 bg-sand-50 px-3 py-1.5" title="سعر الحزمة (بالدولار)">
+          <LayersIcon className="h-4 w-4 text-shield" />
           <input
             className="w-20 bg-transparent text-sm font-bold text-ink outline-none tnum"
             type="number"
