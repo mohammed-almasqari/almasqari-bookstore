@@ -1,0 +1,125 @@
+// ============================================================================
+//  مخطط قاعدة البيانات — متجر الكتب الرقمية
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// المدير (المؤلف) — حساب واحد أو أكثر لإدارة المتجر
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// الكتاب الرقمي
+model Book {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  subtitle    String?
+  author      String   @default("محمد المسقري")
+  description String   @db.Text
+  // السعر بالسنت لتفادي مشاكل الفاصلة العشرية (USD افتراضيًا)
+  priceCents  Int      @default(0)
+  currency    String   @default("USD")
+  isFree      Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  featured    Boolean  @default(false)
+  // أسماء الملفات داخل مجلد الرفع
+  coverFile   String?
+  bookFile    String?
+  fileSize    Int? // بالبايت
+  pages       Int?
+  language    String   @default("ar")
+  category    String?
+  // ترتيب العرض
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orders         Order[]
+  freeClaims     FreeClaim[]
+  downloadTokens DownloadToken[]
+
+  @@index([isPublished, isFree])
+  @@index([featured])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// طلب شراء مدفوع عبر PayPal
+model Order {
+  id              String      @id @default(cuid())
+  book            Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookId          String
+  customerName    String
+  customerEmail   String
+  amountCents     Int
+  currency        String      @default("USD")
+  status          OrderStatus @default(PENDING)
+  paypalOrderId   String?     @unique
+  paypalCaptureId String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  downloadTokens DownloadToken[]
+
+  @@index([status])
+  @@index([customerEmail])
+}
+
+// تسجيل للحصول على كتاب مجاني (مع تأكيد البريد المزدوج)
+model FreeClaim {
+  id           String    @id @default(cuid())
+  book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookId       String
+  name         String
+  email        String
+  confirmed    Boolean   @default(false)
+  confirmToken String    @unique
+  confirmedAt  DateTime?
+  // قبول استلام التحديثات (نشرة بريدية)
+  optInUpdates Boolean   @default(true)
+  ipAddress    String?
+  createdAt    DateTime  @default(now())
+
+  downloadTokens DownloadToken[]
+
+  // لا يسمح بتسجيل البريد نفسه للكتاب نفسه مرتين
+  @@unique([bookId, email])
+  @@index([confirmed])
+}
+
+// رمز تحميل آمن لمرّات محدودة وبصلاحية زمنية
+model DownloadToken {
+  id            String     @id @default(cuid())
+  token         String     @unique
+  book          Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookId        String
+  email         String
+  order         Order?     @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  orderId       String?
+  freeClaim     FreeClaim? @relation(fields: [freeClaimId], references: [id], onDelete: SetNull)
+  freeClaimId   String?
+  maxDownloads  Int        @default(6)
+  downloadCount Int        @default(0)
+  expiresAt     DateTime
+  createdAt     DateTime   @default(now())
+
+  @@index([token])
+}

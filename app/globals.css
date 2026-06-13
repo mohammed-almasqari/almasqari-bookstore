@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #fbf7f0;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(217, 119, 6, 0.07), transparent 60%),
+    radial-gradient(900px 500px at 0% 0%, rgba(3, 105, 161, 0.06), transparent 55%),
+    var(--bg);
+  color: #1e1b2e;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* أرقام لاتينية أوضح للأسعار ضمن سياق عربي */
+.tnum {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-bold
+           transition-all duration-200 focus:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply btn bg-shield text-white shadow-glow hover:bg-shield-light hover:-translate-y-0.5 focus-visible:ring-shield/30;
+  }
+  .btn-dark {
+    @apply btn bg-ink text-white hover:bg-ink-soft hover:-translate-y-0.5 focus-visible:ring-ink/20;
+  }
+  .btn-safe {
+    @apply btn bg-safe text-white hover:bg-safe-light hover:-translate-y-0.5 focus-visible:ring-safe/30;
+  }
+  .btn-ghost {
+    @apply btn border border-sand-200 bg-white/70 text-ink hover:border-shield hover:text-shield;
+  }
+
+  .card {
+    @apply rounded-2xl border border-sand-200 bg-white shadow-card transition-all duration-300;
+  }
+  .card-hover {
+    @apply hover:-translate-y-1 hover:shadow-card-hover;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-sand-200 bg-white px-4 py-3 text-base text-ink
+           placeholder:text-ink-muted/60 focus:border-shield focus:outline-none focus:ring-4 focus:ring-shield/15;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-bold text-ink-soft;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold;
+  }
+  .badge-free {
+    @apply badge bg-safe/10 text-safe;
+  }
+  .badge-paid {
+    @apply badge bg-shield/10 text-guard;
+  }
+
+  .section-title {
+    @apply font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl;
+  }
+}
+
+/* تمرير ناعم لشريط جانبي لوحة التحكم */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(30, 27, 46, 0.18);
+  border-radius: 8px;
+}

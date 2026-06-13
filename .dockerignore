@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+build
+.git
+.gitignore
+*.md
+.env
+.env*.local
+.env.production
+uploads
+public/uploads
+coverage
+.vscode
+.idea
+Thumbs.db
+.DS_Store

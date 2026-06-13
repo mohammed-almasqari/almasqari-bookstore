@@ -1,0 +1,59 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { createPayPalOrder, isPayPalConfigured } from "@/lib/paypal";
+import { priceToDecimalString } from "@/lib/format";
+
+export const dynamic = "force-dynamic";
+
+const schema = z.object({
+  bookId: z.string().min(1),
+  name: z.string().trim().min(2).max(80),
+  email: z.string().email().max(160),
+});
+
+export async function POST(req: NextRequest) {
+  if (!isPayPalConfigured()) {
+    return NextResponse.json({ error: "بوابة الدفع غير مهيّأة على الخادم." }, { status: 503 });
+  }
+
+  const body = await req.json().catch(() => null);
+  const parsed = schema.safeParse(body);
+  if (!parsed.success) return NextResponse.json({ error: "بيانات غير صحيحة." }, { status: 400 });
+
+  const { bookId, name } = parsed.data;
+  const email = parsed.data.email.toLowerCase().trim();
+
+  const book = await prisma.book.findFirst({
+    where: { id: bookId, isFree: false, isPublished: true },
+  });
+  if (!book) return NextResponse.json({ error: "الكتاب غير متاح للشراء." }, { status: 404 });
+  if (book.priceCents <= 0) return NextResponse.json({ error: "سعر الكتاب غير صالح." }, { status: 400 });
+
+  try {
+    const amount = priceToDecimalString(book.priceCents);
+    const ppOrder = await createPayPalOrder({
+      amount,
+      currency: book.currency,
+      bookTitle: book.title,
+      referenceId: book.id,
+    });
+
+    await prisma.order.create({
+      data: {
+        bookId: book.id,
+        customerName: name,
+        customerEmail: email,
+        amountCents: book.priceCents,
+        currency: book.currency,
+        status: "PENDING",
+        paypalOrderId: ppOrder.id,
+      },
+    });
+
+    return NextResponse.json({ paypalOrderId: ppOrder.id });
+  } catch (e) {
+    console.error("[checkout] create order error:", e);
+    return NextResponse.json({ error: "تعذّر بدء عملية الدفع. حاول لاحقًا." }, { status: 502 });
+  }
+}
