@@ -63,7 +63,7 @@ export default function WishlistPage() {
           <Link href="/books" className="btn-primary mt-5 inline-flex">تصفّح المكتبة</Link>
         </div>
       ) : (
-        <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
           {books.map((b) => <BookCard key={b.id} book={b} />)}
         </div>
       )}

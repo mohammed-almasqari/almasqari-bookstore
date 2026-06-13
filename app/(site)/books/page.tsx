@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import BookCard, { type BookCardData } from "@/components/BookCard";
+import TrustBadges from "@/components/TrustBadges";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -86,12 +87,14 @@ export default async function BooksPage({ searchParams }: { searchParams: Search
       {/* النتائج */}
       <p className="mt-6 text-sm text-ink-muted">{books.length} كتاب</p>
       {books.length > 0 ? (
-        <div className="mt-4 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
           {books.map((b) => <BookCard key={b.id} book={b} />)}
         </div>
       ) : (
         <div className="card mx-auto mt-6 max-w-md p-12 text-center text-ink-muted">لا توجد نتائج مطابقة. جرّب فلترة أخرى.</div>
       )}
+
+      <TrustBadges className="mt-16" />
     </div>
   );
 }

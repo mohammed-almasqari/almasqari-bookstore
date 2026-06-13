@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import BookCard, { type BookCardData } from "@/components/BookCard";
 import BookCover from "@/components/BookCover";
 import StarRating from "@/components/StarRating";
+import TrustBadges from "@/components/TrustBadges";
 import Reveal from "@/components/Reveal";
 import {
   ShieldIcon,
@@ -143,7 +144,7 @@ export default async function HomePage() {
           </Link>
         </div>
         {books.length > 0 ? (
-          <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
             {books.map((b) => (
               <BookCard key={b.id} book={b} />
             ))}
@@ -195,11 +196,16 @@ export default async function HomePage() {
               <p className="mt-2 text-ink-muted">أكثر ما اختاره القرّاء.</p>
             </div>
           </div>
-          <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
             {popular.map((b) => <BookCard key={b.id} book={b} />)}
           </div>
         </section>
       )}
+
+      {/* مؤشّرات الثقة */}
+      <section className="container-x mt-16">
+        <TrustBadges />
+      </section>
 
       {/* شهادات القرّاء */}
       {testimonials.length > 0 && (

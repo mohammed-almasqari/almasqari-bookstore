@@ -5,12 +5,14 @@ type Props = {
   title: string;
   hasCover: boolean;
   className?: string;
+  fit?: "cover" | "contain";
 };
 
 /**
  * يعرض غلاف الكتاب من المسار الآمن، أو غلافًا بديلًا أنيقًا إن لم يُرفع غلاف بعد.
+ * fit="contain" يعرض الغلاف كاملًا (طافيًا) و"cover" يملأ المساحة.
  */
-export default function BookCover({ bookId, title, hasCover, className = "" }: Props) {
+export default function BookCover({ bookId, title, hasCover, className = "", fit = "cover" }: Props) {
   if (hasCover) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -18,7 +20,7 @@ export default function BookCover({ bookId, title, hasCover, className = "" }: P
         src={`/api/cover/${bookId}`}
         alt={`غلاف كتاب ${title}`}
         loading="lazy"
-        className={`h-full w-full object-cover ${className}`}
+        className={`h-full w-full ${fit === "contain" ? "object-contain" : "object-cover"} ${className}`}
       />
     );
   }

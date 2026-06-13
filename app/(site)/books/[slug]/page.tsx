@@ -238,7 +238,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
             <h2 className="section-title text-2xl">من سلسلة «{book.series.title}»</h2>
             <Link href={`/series/${book.series.slug}`} className="text-sm font-bold text-shield hover:underline">السلسلة كاملة ←</Link>
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
             {related.map((b) => <BookCard key={b.id} book={b} />)}
           </div>
         </section>

@@ -115,7 +115,7 @@ export default async function SeriesPage({ params }: { params: { slug: string } 
       {series.books.length === 0 ? (
         <p className="mt-6 text-ink-muted">لا توجد كتب في هذه السلسلة بعد.</p>
       ) : (
-        <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
           {series.books.map((b, i) => (
             <div key={b.id} className="relative">
               <span className="absolute -right-2 -top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-shield font-display text-sm font-extrabold text-white shadow-glow tnum">
