@@ -32,8 +32,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      # يجعل Coolify يولّد دومينًا (على 80/443) ويوجّه Traefik إلى المنفذ 3000 لخدمة app
-      SERVICE_FQDN_APP_3000: "/"
+      # يحدد دومين الخدمة app (book.dalilai.net) ويوجّه Traefik إلى المنفذ 3000
+      SERVICE_FQDN_APP_3000: "https://book.dalilai.net"
       # تُضبط هذه القيم في Coolify (Environment Variables) وتُمرّر للحاوية عبر الاستبدال.
       # داخل شبكة compose يكون مضيف قاعدة البيانات هو اسم الخدمة "db".
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public"
