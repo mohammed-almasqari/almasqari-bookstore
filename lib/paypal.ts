@@ -104,3 +104,18 @@ export async function isPayPalReady(): Promise<boolean> {
   const c = await config();
   return Boolean(c.enabled && c.clientId && c.clientSecret);
 }
+
+// اختبار صحة مفاتيح PayPal بمحاولة الحصول على رمز وصول (OAuth)
+export async function testPayPalCredentials(): Promise<{ ok: boolean; env: string; error?: string }> {
+  const c = await config();
+  if (!c.clientId || !c.clientSecret) {
+    return { ok: false, env: c.env, error: "أدخل Client ID و Secret أولًا واحفظ." };
+  }
+  try {
+    await getAccessToken(c.clientId, c.clientSecret, c.env);
+    return { ok: true, env: c.env };
+  } catch (e: any) {
+    const raw = e?.message || String(e);
+    return { ok: false, env: c.env, error: raw };
+  }
+}

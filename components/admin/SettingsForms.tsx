@@ -70,8 +70,24 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
   const [testTo, setTestTo] = useState("");
   const [testing, setTesting] = useState(false);
   const [testMsg, setTestMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [ppTesting, setPpTesting] = useState(false);
+  const [ppMsg, setPpMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const upd = (k: string, v: any) => setF((s) => ({ ...s, [k]: v }));
+
+  async function testPaypal() {
+    setPpTesting(true); setPpMsg(null);
+    try {
+      const res = await fetch("/api/admin/test-paypal", { method: "POST" });
+      const d = await res.json();
+      if (d.ok) setPpMsg({ ok: true, text: `نجح الاتصال بـ PayPal (${d.env === "live" ? "مباشر" : "تجريبي"}) ✓ المفاتيح صحيحة.` });
+      else setPpMsg({ ok: false, text: d.error || "فشل الاتصال." });
+    } catch {
+      setPpMsg({ ok: false, text: "حدث خطأ في الشبكة." });
+    } finally {
+      setPpTesting(false);
+    }
+  }
 
   async function testEmail() {
     setTesting(true); setTestMsg(null);
@@ -146,6 +162,20 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
               <li>فعّل الزر واحفظ — وسيظهر الدفع فورًا في صفحات الكتب المدفوعة.</li>
             </ol>
           </Instructions>
+
+          <div className="rounded-xl border border-sand-200 bg-sand-50 p-4">
+            <div className="mb-2 text-sm font-bold text-ink">اختبار الاتصال بـ PayPal</div>
+            <p className="mb-3 text-xs text-ink-muted">احفظ المفاتيح أولًا، ثم اضغط للتأكد من صحتها ومطابقتها للبيئة المختارة.</p>
+            <button type="button" onClick={testPaypal} disabled={ppTesting} className="btn-ghost h-11">
+              {ppTesting ? <SpinnerIcon className="h-5 w-5" /> : <CartIcon className="h-5 w-5" />}
+              اختبار الاتصال
+            </button>
+            {ppMsg && (
+              <div className={`mt-3 rounded-lg p-3 text-sm font-bold leading-7 ${ppMsg.ok ? "bg-safe/10 text-safe" : "bg-alert/10 text-alert"}`}>
+                {ppMsg.text}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
