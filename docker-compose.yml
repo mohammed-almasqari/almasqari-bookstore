@@ -28,8 +28,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      # متغيّر Coolify السحري: يربط الشبكة والمنفذ 3000 ويولّد توجيه Traefik لدومين الخدمة
-      SERVICE_FQDN_APP_3000: "book.dalilai.net"
+      # متغيّر Coolify السحري: يربط الشبكة والمنفذ 3000 ويولّد توجيه Traefik (دومين تلقائي)
+      SERVICE_FQDN_APP_3000: "/"
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public"
       AUTH_SECRET: ${AUTH_SECRET}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
