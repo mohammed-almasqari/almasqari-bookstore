@@ -59,6 +59,7 @@ export default async function OrdersPage() {
                       <div className="font-bold text-ink">{o.customerName}</div>
                       <div dir="ltr" className="text-right text-xs text-ink-muted">{o.customerEmail}</div>
                       {o.bankReference && <div className="text-xs text-ink-muted">مرجع: {o.bankReference}</div>}
+                      {o.referralCode && <div dir="ltr" className="text-right text-[11px] font-bold text-shield">إحالة: {o.referralCode}</div>}
                     </td>
                     <td className="p-4 text-ink-soft">
                       {o.series ? (

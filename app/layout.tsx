@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { env } from "@/lib/env";
 import Analytics from "@/components/Analytics";
+import RefCapture from "@/components/RefCapture";
 
 const tajawal = Tajawal({
   subsets: ["arabic"],
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
         {children}
+        <RefCapture />
         <Suspense fallback={null}>
           <Analytics />
         </Suspense>

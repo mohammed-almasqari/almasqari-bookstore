@@ -5,6 +5,7 @@ import { capturePayPalOrder } from "@/lib/paypal";
 import { createDownloadToken } from "@/lib/tokens";
 import { absoluteUrl } from "@/lib/env";
 import { incrementCouponUse } from "@/lib/coupons";
+import { creditReferral } from "@/lib/referrals";
 import { fulfillOrder, EXPIRY_DAYS } from "@/lib/fulfillment";
 
 export const dynamic = "force-dynamic";
@@ -56,8 +57,9 @@ export async function POST(req: NextRequest) {
       include: { book: true, series: true },
     });
 
-    // تثبيت استخدام الكوبون بعد اكتمال الدفع فعليًا
+    // تثبيت استخدام الكوبون وعمولة الإحالة بعد اكتمال الدفع فعليًا
     await incrementCouponUse(updated.couponCode);
+    await creditReferral(updated.referralCode, updated.amountCents);
 
     // إنشاء روابط التحميل وإرسال الإيصال والتسليم (كتاب مفرد أو حزمة)
     const downloadUrl = await fulfillOrder(updated);

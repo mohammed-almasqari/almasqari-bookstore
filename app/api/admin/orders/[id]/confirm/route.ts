@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { incrementCouponUse } from "@/lib/coupons";
+import { creditReferral } from "@/lib/referrals";
 import { fulfillOrder } from "@/lib/fulfillment";
 
 export const dynamic = "force-dynamic";
@@ -21,8 +22,9 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
     include: { book: true, series: true },
   });
 
-  // تثبيت استخدام الكوبون بعد تأكيد التحويل
+  // تثبيت استخدام الكوبون وعمولة الإحالة بعد تأكيد التحويل
   await incrementCouponUse(updated.couponCode);
+  await creditReferral(updated.referralCode, updated.amountCents);
 
   // إنشاء روابط التحميل وإرسال الإيصال والتسليم (كتاب مفرد أو حزمة)
   await fulfillOrder(updated);
