@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import BookCard, { type BookCardData } from "@/components/BookCard";
 import BookCover from "@/components/BookCover";
+import StarRating from "@/components/StarRating";
 import {
   ShieldIcon,
   DownloadIcon,
@@ -16,7 +17,7 @@ import {
 export const dynamic = "force-dynamic";
 
 async function getData() {
-  const [featured, allBooks, series] = await Promise.all([
+  const [featured, allBooks, series, testimonials] = await Promise.all([
     prisma.book.findFirst({
       where: { isPublished: true, isFree: true },
       orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
@@ -32,6 +33,12 @@ async function getData() {
       take: 3,
       include: { books: { where: { isPublished: true }, orderBy: { seriesOrder: "asc" }, select: { id: true, title: true, coverFile: true } } },
     }),
+    prisma.review.findMany({
+      where: { approved: true, rating: { gte: 4 }, comment: { not: null } },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+      include: { book: { select: { title: true } } },
+    }),
   ]);
 
   const books = allBooks.slice(0, 12) as unknown as BookCardData[];
@@ -42,11 +49,11 @@ async function getData() {
     .slice(0, 4)
     .map((x) => x.b as unknown as BookCardData);
 
-  return { featured, books, series, popular };
+  return { featured, books, series, popular, testimonials };
 }
 
 export default async function HomePage() {
-  const { featured, books, series, popular } = await getData();
+  const { featured, books, series, popular, testimonials } = await getData();
 
   return (
     <>
@@ -189,6 +196,25 @@ export default async function HomePage() {
           </div>
           <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
             {popular.map((b) => <BookCard key={b.id} book={b} />)}
+          </div>
+        </section>
+      )}
+
+      {/* شهادات القرّاء */}
+      {testimonials.length > 0 && (
+        <section className="container-x mt-20">
+          <h2 className="section-title text-center">ماذا قال القرّاء</h2>
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {testimonials.map((t) => (
+              <figure key={t.id} className="card p-6">
+                <StarRating value={t.rating} />
+                <blockquote className="mt-3 leading-8 text-ink-soft line-clamp-4">“{t.comment}”</blockquote>
+                <figcaption className="mt-4 border-t border-sand-100 pt-3 text-sm">
+                  <span className="font-bold text-ink">{t.name}</span>
+                  <span className="text-ink-muted"> · عن «{t.book.title}»</span>
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </section>
       )}

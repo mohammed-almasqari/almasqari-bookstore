@@ -12,7 +12,7 @@ const links = [
   { href: "/series", label: "السلاسل" },
   { href: "/free", label: "كتب مجانية" },
   { href: "/account", label: "مكتبتي" },
-  { href: "/#about", label: "عن المؤلف" },
+  { href: "/about", label: "عن المؤلف" },
 ];
 
 export default function Navbar() {
@@ -20,7 +20,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href.replace("/#about", "/"));
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
     <header className="sticky top-0 z-50 border-b border-sand-200/70 bg-sand-50/80 backdrop-blur-md">

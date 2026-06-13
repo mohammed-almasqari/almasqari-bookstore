@@ -56,11 +56,26 @@ model Book {
   orders         Order[]
   freeClaims     FreeClaim[]
   downloadTokens DownloadToken[]
+  reviews        Review[]
 
   @@index([isPublished, isFree])
   @@index([featured])
   @@index([seriesId])
   @@index([category])
+}
+
+// مراجعة/تقييم قارئ لكتاب
+model Review {
+  id        String   @id @default(cuid())
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookId    String
+  name      String
+  rating    Int      @default(5)
+  comment   String?  @db.Text
+  approved  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([bookId, approved])
 }
 
 // سلسلة كتب تجمع عدة كتب بترتيب قراءة موصى به

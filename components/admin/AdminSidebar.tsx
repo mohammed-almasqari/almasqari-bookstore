@@ -14,6 +14,7 @@ import {
   CloseIcon,
   SettingsIcon,
   GridIcon,
+  StarIcon,
 } from "@/components/icons";
 
 const nav = [
@@ -21,6 +22,7 @@ const nav = [
   { href: "/admin/books", label: "الكتب", icon: BookIcon },
   { href: "/admin/series", label: "السلاسل", icon: GridIcon },
   { href: "/admin/orders", label: "الطلبات", icon: ReceiptIcon },
+  { href: "/admin/reviews", label: "التقييمات", icon: StarIcon },
   { href: "/admin/subscribers", label: "المشتركون", icon: UsersIcon },
   { href: "/admin/settings", label: "الإعدادات", icon: SettingsIcon },
 ];

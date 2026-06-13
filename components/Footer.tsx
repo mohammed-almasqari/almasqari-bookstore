@@ -22,7 +22,7 @@ export default function Footer() {
             <li><Link href="/books" className="hover:text-shield-light">المكتبة الكاملة</Link></li>
             <li><Link href="/series" className="hover:text-shield-light">السلاسل</Link></li>
             <li><Link href="/free" className="hover:text-shield-light">الكتب المجانية</Link></li>
-            <li><Link href="/#about" className="hover:text-shield-light">عن المؤلف</Link></li>
+            <li><Link href="/about" className="hover:text-shield-light">عن المؤلف</Link></li>
           </ul>
         </div>
 

@@ -6,7 +6,10 @@ import { getSettings } from "@/lib/settings";
 import BookCover from "@/components/BookCover";
 import BookCard, { type BookCardData } from "@/components/BookCard";
 import PurchasePanel from "@/components/PurchasePanel";
-import { formatPrice, priceToDecimalString, formatBytes } from "@/lib/format";
+import StarRating from "@/components/StarRating";
+import ReviewForm from "@/components/ReviewForm";
+import ShareButtons from "@/components/ShareButtons";
+import { formatPrice, priceToDecimalString, formatBytes, formatDate } from "@/lib/format";
 import { BookIcon, CheckIcon, DownloadIcon, GiftIcon, LockIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
@@ -54,6 +57,14 @@ export default async function BookPage({ params }: { params: { slug: string } })
     .map((c) => c.trim())
     .filter(Boolean);
 
+  const reviews = await prisma.review.findMany({
+    where: { bookId: book.id, approved: true },
+    orderBy: { createdAt: "desc" },
+    take: 30,
+  });
+  const reviewCount = reviews.length;
+  const avgRating = reviewCount ? reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : 0;
+
   const base = env.siteUrl.replace(/\/$/, "");
   const bookLd = {
     "@context": "https://schema.org",
@@ -63,6 +74,9 @@ export default async function BookPage({ params }: { params: { slug: string } })
     inLanguage: book.language,
     description: book.description.slice(0, 300),
     ...(book.coverFile ? { image: `${base}/api/cover/${book.id}` } : {}),
+    ...(reviewCount > 0
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: avgRating.toFixed(1), reviewCount } }
+      : {}),
     offers: {
       "@type": "Offer",
       price: book.isFree ? "0" : (book.priceCents / 100).toFixed(2),
@@ -126,6 +140,14 @@ export default async function BookPage({ params }: { params: { slug: string } })
             {book.title}
           </h1>
           {book.subtitle && <p className="mt-3 text-xl text-ink-soft">{book.subtitle}</p>}
+
+          {reviewCount > 0 && (
+            <div className="mt-3 flex items-center gap-2">
+              <StarRating value={avgRating} size="md" />
+              <span className="text-sm font-bold text-ink-soft tnum">{avgRating.toFixed(1)}</span>
+              <span className="text-sm text-ink-muted">({reviewCount} تقييم)</span>
+            </div>
+          )}
 
           <div className="mt-6 max-w-2xl whitespace-pre-line leading-9 text-ink-soft">
             {book.description}
@@ -201,6 +223,11 @@ export default async function BookPage({ params }: { params: { slug: string } })
             <li className="inline-flex items-center gap-2"><LockIcon className="h-4 w-4 text-safe" /> رابط آمن ومؤقت</li>
             <li className="inline-flex items-center gap-2"><CheckIcon className="h-4 w-4 text-shield" /> نسخة أصلية بصيغة PDF</li>
           </ul>
+
+          {/* مشاركة */}
+          <div className="mt-6 border-t border-sand-100 pt-5">
+            <ShareButtons url={`${base}/books/${book.slug}`} title={book.title} />
+          </div>
         </div>
       </div>
 
@@ -216,6 +243,39 @@ export default async function BookPage({ params }: { params: { slug: string } })
           </div>
         </section>
       )}
+
+      {/* آراء القرّاء */}
+      <section className="mt-16">
+        <div className="flex items-center gap-3">
+          <h2 className="section-title text-2xl">آراء القرّاء</h2>
+          {reviewCount > 0 && <StarRating value={avgRating} size="md" />}
+        </div>
+        <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_360px]">
+          <div>
+            {reviewCount === 0 ? (
+              <p className="rounded-2xl border border-dashed border-sand-200 bg-white p-8 text-center text-ink-muted">
+                لا توجد تقييمات بعد — كن أول من يقيّم هذا الكتاب.
+              </p>
+            ) : (
+              <ul className="space-y-4">
+                {reviews.map((r) => (
+                  <li key={r.id} className="card p-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="font-bold text-ink">{r.name}</span>
+                      <StarRating value={r.rating} />
+                    </div>
+                    {r.comment && <p className="mt-2 leading-8 text-ink-soft">{r.comment}</p>}
+                    <p className="mt-1 text-xs text-ink-muted">{formatDate(r.createdAt)}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <ReviewForm bookId={book.id} />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
