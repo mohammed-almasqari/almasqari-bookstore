@@ -17,7 +17,7 @@ export type BookCardData = {
 };
 
 export default function BookCard({ book }: { book: BookCardData }) {
-  const href = book.isFree ? "/free" : `/books/${book.slug}`;
+  const href = `/books/${book.slug}`;
 
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-sand-200 bg-surface shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-hover">

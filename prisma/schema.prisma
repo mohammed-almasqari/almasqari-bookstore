@@ -44,6 +44,12 @@ model Book {
   category    String?
   // فهرس الفصول (سطر لكل فصل) يظهر في صفحة الكتاب
   chapters    String?  @db.Text
+  // لمن هذا الكتاب (سطر لكل فئة) — لصفحة الهبوط
+  audience    String?  @db.Text
+  // وصايا/دروس الكتاب (سطر لكل وصية) — لصفحة الهبوط
+  takeaways   String?  @db.Text
+  // إشعار حقوق الملكية الفكرية والنشر (اختياري؛ يُولَّد افتراضيًا إن تُرك فارغًا)
+  copyright   String?  @db.Text
   // السلسلة التي ينتمي إليها الكتاب وترتيبه فيها
   series      Series?  @relation(fields: [seriesId], references: [id], onDelete: SetNull)
   seriesId    String?

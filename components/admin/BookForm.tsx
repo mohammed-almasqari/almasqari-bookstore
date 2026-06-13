@@ -22,6 +22,9 @@ export type BookFormData = {
   seriesId?: string | null;
   seriesOrder?: number;
   chapters?: string | null;
+  audience?: string | null;
+  takeaways?: string | null;
+  copyright?: string | null;
   coverFile?: string | null;
   bookFile?: string | null;
 };
@@ -124,6 +127,20 @@ export default function BookForm({
                 <label className="label">فهرس الفصول (فصل في كل سطر)</label>
                 <textarea name="chapters" className="input min-h-[110px]" defaultValue={initial?.chapters ?? ""} placeholder={"الفصل الأول: ...\nالفصل الثاني: ...\nالفصل الثالث: ..."} />
                 <p className="mt-1 text-xs text-ink-muted">يظهر كقائمة مرقّمة في صفحة الكتاب لإبراز قيمته قبل الشراء.</p>
+              </div>
+              <div>
+                <label className="label">لمن هذا الكتاب؟ (فئة في كل سطر)</label>
+                <textarea name="audience" className="input min-h-[90px]" defaultValue={initial?.audience ?? ""} placeholder={"كل من يستخدم الإنترنت يوميًا\nالآباء والأمهات\nأصحاب الأعمال…"} />
+                <p className="mt-1 text-xs text-ink-muted">تظهر كقائمة في قسم «لمن هذا الكتاب» بصفحة الكتاب.</p>
+              </div>
+              <div>
+                <label className="label">وصايا الكتاب (وصية في كل سطر)</label>
+                <textarea name="takeaways" className="input min-h-[90px]" defaultValue={initial?.takeaways ?? ""} placeholder={"لا تثق برابط لم تطلبه\nفعّل التحقّق بخطوتين…"} />
+                <p className="mt-1 text-xs text-ink-muted">خلاصات عملية تظهر في قسم «وصايا الكتاب».</p>
+              </div>
+              <div>
+                <label className="label">حقوق الملكية الفكرية والنشر (اختياري)</label>
+                <textarea name="copyright" className="input min-h-[80px]" defaultValue={initial?.copyright ?? ""} placeholder="اتركه فارغًا لاستخدام نصّ حقوق افتراضي باسم المؤلف." />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>

@@ -54,6 +54,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     seriesId: fdHas(fd, "seriesId") ? (fdStr(fd, "seriesId") || null) : book.seriesId,
     seriesOrder: fdHas(fd, "seriesOrder") ? fdNum(fd, "seriesOrder") : book.seriesOrder,
     chapters: fdHas(fd, "chapters") ? (fdStr(fd, "chapters") || null) : book.chapters,
+    audience: fdHas(fd, "audience") ? (fdStr(fd, "audience") || null) : book.audience,
+    takeaways: fdHas(fd, "takeaways") ? (fdStr(fd, "takeaways") || null) : book.takeaways,
+    copyright: fdHas(fd, "copyright") ? (fdStr(fd, "copyright") || null) : book.copyright,
   };
 
   try {

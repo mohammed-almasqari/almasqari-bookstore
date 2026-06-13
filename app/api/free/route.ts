@@ -12,6 +12,8 @@ const schema = z.object({
   name: z.string().trim().min(2).max(80),
   email: z.string().email().max(160),
   optIn: z.boolean().optional(),
+  // تسليم فوري: يرسل الكتاب مباشرة بعد التسجيل (دون خطوة تأكيد بالبريد)
+  instant: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "بيانات غير صحيحة، تأكد من الاسم والبريد." }, { status: 400 });
   }
-  const { bookId, name, optIn } = parsed.data;
+  const { bookId, name, optIn, instant } = parsed.data;
   const email = parsed.data.email.toLowerCase().trim();
 
   const book = await prisma.book.findFirst({
@@ -41,14 +43,46 @@ export async function POST(req: NextRequest) {
     if (!dl) {
       dl = await createDownloadToken({ bookId, email, freeClaimId: existing.id, days: 30 });
     }
+    const downloadUrl = absoluteUrl(`/api/download/${dl.token}`);
     await sendDeliveryEmail(email, {
       name: existing.name,
       bookTitle: book.title,
-      downloadUrl: absoluteUrl(`/api/download/${dl.token}`),
+      downloadUrl,
       expiresLabel: "30 يومًا",
       paid: false,
     });
-    return NextResponse.json({ ok: true, resent: true });
+    return NextResponse.json({ ok: true, resent: true, ...(instant ? { downloadUrl } : {}) });
+  }
+
+  // التسليم الفوري: نعتبر التسجيل تأكيدًا ونرسل الكتاب مباشرة + نعيد رابط التحميل للعرض الفوري
+  if (instant) {
+    const claim = existing
+      ? await prisma.freeClaim.update({
+          where: { id: existing.id },
+          data: { name, confirmed: true, confirmedAt: new Date(), optInUpdates: optIn ?? true },
+        })
+      : await prisma.freeClaim.create({
+          data: {
+            bookId,
+            name,
+            email,
+            confirmed: true,
+            confirmedAt: new Date(),
+            confirmToken: confirmToken(),
+            optInUpdates: optIn ?? true,
+            ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
+          },
+        });
+    const dl = await createDownloadToken({ bookId, email, freeClaimId: claim.id, days: 30 });
+    const downloadUrl = absoluteUrl(`/api/download/${dl.token}`);
+    await sendDeliveryEmail(email, {
+      name,
+      bookTitle: book.title,
+      downloadUrl,
+      expiresLabel: "30 يومًا",
+      paid: false,
+    });
+    return NextResponse.json({ ok: true, downloadUrl });
   }
 
   // تسجيل جديد أو غير مؤكَّد — أرسل رابط التأكيد

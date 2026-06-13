@@ -6,11 +6,12 @@ import { getSettings } from "@/lib/settings";
 import BookCover from "@/components/BookCover";
 import BookCard, { type BookCardData } from "@/components/BookCard";
 import PurchasePanel from "@/components/PurchasePanel";
+import InstantClaimForm from "@/components/InstantClaimForm";
 import StarRating from "@/components/StarRating";
 import ReviewForm from "@/components/ReviewForm";
 import ShareButtons from "@/components/ShareButtons";
 import { formatPrice, priceToDecimalString, formatBytes, formatDate } from "@/lib/format";
-import { BookIcon, CheckIcon, DownloadIcon, GiftIcon, LockIcon } from "@/components/icons";
+import { BookIcon, CheckIcon, DownloadIcon, GiftIcon, LockIcon, ShieldIcon, UsersIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
+function splitLines(s: string | null): string[] {
+  return (s || "").split("\n").map((c) => c.trim()).filter(Boolean);
+}
+
 export default async function BookPage({ params }: { params: { slug: string } }) {
   const book = await getBook(params.slug);
   if (!book || !book.isPublished) notFound();
@@ -52,10 +57,10 @@ export default async function BookPage({ params }: { params: { slug: string } })
         take: 6,
       })) as BookCardData[])
     : [];
-  const chapterList = (book.chapters || "")
-    .split("\n")
-    .map((c) => c.trim())
-    .filter(Boolean);
+
+  const chapterList = splitLines(book.chapters);
+  const audienceList = splitLines(book.audience);
+  const takeawaysList = splitLines(book.takeaways);
 
   const reviews = await prisma.review.findMany({
     where: { bookId: book.id, approved: true },
@@ -66,6 +71,11 @@ export default async function BookPage({ params }: { params: { slug: string } })
   const avgRating = reviewCount ? reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : 0;
 
   const base = env.siteUrl.replace(/\/$/, "");
+  const year = new Date().getFullYear();
+  const copyrightText =
+    book.copyright?.trim() ||
+    `جميع الحقوق محفوظة للمؤلف ${book.author} © ${year}. هذا الكتاب عملٌ فكريٌّ محميٌّ بموجب قوانين حقوق التأليف والنشر؛ يُمنع نسخه أو إعادة توزيعه أو بيعه أو اقتباس أجزاء منه دون إذنٍ خطّيٍّ مسبق من المؤلف. النسخة التي تحصل عليها مرخّصةٌ لاستخدامك الشخصي فقط، ورابط التحميل خاصٌّ بك فلا تشاركه.`;
+
   const bookLd = {
     "@context": "https://schema.org",
     "@type": "Book",
@@ -104,6 +114,51 @@ export default async function BookPage({ params }: { params: { slug: string } })
     ["اللغة", book.language === "ar" ? "العربية" : book.language],
   ];
 
+  const ClaimBox = (
+    <div id="claim" className="scroll-mt-24 rounded-3xl border border-sand-200 bg-surface p-6 shadow-card sm:p-7">
+      {book.isFree ? (
+        <>
+          <div className="mb-4 text-center">
+            <span className="badge-free mx-auto"><GiftIcon className="h-4 w-4" /> هدية مجانية</span>
+            <div className="mt-2 font-display text-2xl font-extrabold text-safe">مجاني 100%</div>
+            <p className="mt-1 text-sm text-ink-muted">سجّل اسمك وبريدك ويصلك الكتاب فورًا.</p>
+          </div>
+          <InstantClaimForm bookId={book.id} title={book.title} />
+        </>
+      ) : (
+        <>
+          <div className="mb-5 flex items-baseline justify-between">
+            <span className="font-display text-lg font-bold text-ink">احصل على نسختك</span>
+            <span className="tnum font-display text-3xl font-extrabold text-guard">{formatPrice(book.priceCents, book.currency)}</span>
+          </div>
+          <PurchasePanel
+            bookId={book.id}
+            title={book.title}
+            amount={priceToDecimalString(book.priceCents)}
+            currency={book.currency}
+            priceLabel={formatPrice(book.priceCents, book.currency)}
+            paypalEnabled={settings.paypalEnabled}
+            paypalClientId={settings.paypalClientId}
+            bankEnabled={settings.bankEnabled}
+            bank={{
+              name: settings.bankName,
+              accountName: settings.bankAccountName,
+              iban: settings.bankIban,
+              accountNumber: settings.bankAccountNumber,
+              swift: settings.bankSwift,
+              instructions: settings.bankInstructions,
+            }}
+          />
+        </>
+      )}
+      <ul className="mt-5 space-y-2 border-t border-sand-100 pt-4 text-sm font-bold text-ink-soft">
+        <li className="flex items-center gap-2"><DownloadIcon className="h-4 w-4 text-steel" /> تحميل فوري بعد التسجيل</li>
+        <li className="flex items-center gap-2"><LockIcon className="h-4 w-4 text-safe" /> رابط تحميل آمن ومؤقت</li>
+        <li className="flex items-center gap-2"><CheckIcon className="h-4 w-4 text-shield" /> نسخة أصلية بصيغة PDF</li>
+      </ul>
+    </div>
+  );
+
   return (
     <div className="container-x py-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookLd) }} />
@@ -122,50 +177,51 @@ export default async function BookPage({ params }: { params: { slug: string } })
         <span className="text-ink-soft">{book.title}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-[380px_1fr]">
-        {/* الغلاف */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <div className="relative mx-auto w-full max-w-xs">
-            <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-gradient-to-br from-shield/20 to-steel/20 blur-2xl" />
-            <div className="aspect-[3/4] overflow-hidden rounded-3xl border border-sand-200 shadow-card-hover">
-              <BookCover bookId={book.id} title={book.title} hasCover={!!book.coverFile} />
-            </div>
-          </div>
-        </div>
-
-        {/* التفاصيل */}
-        <div>
-          {book.isFree ? <span className="badge-free"><GiftIcon className="h-4 w-4" /> كتاب مجاني</span> : <span className="badge-paid"><BookIcon className="h-4 w-4" /> {book.category || "كتاب رقمي"}</span>}
-          <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight text-ink sm:text-4xl">
-            {book.title}
-          </h1>
-          {book.subtitle && <p className="mt-3 text-xl text-ink-soft">{book.subtitle}</p>}
+      {/* البطل */}
+      <div className="grid gap-10 lg:grid-cols-[1fr_400px]">
+        {/* العنوان والوصف */}
+        <div className="order-2 lg:order-1">
+          {book.isFree ? (
+            <span className="badge-free"><GiftIcon className="h-4 w-4" /> كتاب مجاني</span>
+          ) : (
+            <span className="badge-paid"><BookIcon className="h-4 w-4" /> {book.category || "كتاب رقمي"}</span>
+          )}
+          <h1 className="mt-4 font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl">{book.title}</h1>
+          {book.subtitle && <p className="mt-4 text-xl leading-9 text-ink-soft">{book.subtitle}</p>}
 
           {reviewCount > 0 && (
-            <div className="mt-3 flex items-center gap-2">
+            <div className="mt-4 flex items-center gap-2">
               <StarRating value={avgRating} size="md" />
               <span className="text-sm font-bold text-ink-soft tnum">{avgRating.toFixed(1)}</span>
               <span className="text-sm text-ink-muted">({reviewCount} تقييم)</span>
             </div>
           )}
 
-          <div className="mt-6 max-w-2xl whitespace-pre-line leading-9 text-ink-soft">
-            {book.description}
+          {/* مزايا سريعة */}
+          <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-bold text-ink-soft">
+            <li className="inline-flex items-center gap-2"><DownloadIcon className="h-4 w-4 text-steel" /> تحميل فوري</li>
+            <li className="inline-flex items-center gap-2"><LockIcon className="h-4 w-4 text-safe" /> رابط آمن ومؤقت</li>
+            <li className="inline-flex items-center gap-2"><BookIcon className="h-4 w-4 text-shield" /> {book.pages ? `${book.pages} صفحة` : "PDF"}</li>
+          </ul>
+
+          {/* الغلاف للجوال */}
+          <div className="mt-8 lg:hidden">
+            <div className="relative mx-auto w-full max-w-[260px]">
+              <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-shield/20 to-steel/20 blur-2xl" />
+              <div className="aspect-[3/4] overflow-hidden rounded-3xl border border-sand-200 shadow-card-hover">
+                <BookCover bookId={book.id} title={book.title} hasCover={!!book.coverFile} />
+              </div>
+            </div>
           </div>
 
-          {chapterList.length > 0 && (
-            <div className="mt-8">
-              <h2 className="font-display text-xl font-extrabold text-ink">فهرس الفصول</h2>
-              <ol className="mt-3 space-y-2">
-                {chapterList.map((c, i) => (
-                  <li key={i} className="flex items-start gap-3 rounded-xl border border-sand-200 bg-surface px-4 py-2.5">
-                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-shield/10 text-xs font-bold text-guard tnum">{i + 1}</span>
-                    <span className="text-ink-soft">{c}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          )}
+          {/* صندوق الطلب للجوال */}
+          <div className="mt-8 lg:hidden">{ClaimBox}</div>
+
+          {/* نبذة */}
+          <section className="mt-10">
+            <h2 className="font-display text-2xl font-extrabold text-ink">نبذة عن الكتاب</h2>
+            <div className="mt-4 max-w-2xl whitespace-pre-line leading-9 text-ink-soft">{book.description}</div>
+          </section>
 
           {/* بطاقة الحقائق */}
           <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-1 rounded-2xl border border-sand-200 bg-surface p-6 sm:grid-cols-3">
@@ -176,60 +232,84 @@ export default async function BookPage({ params }: { params: { slug: string } })
               </div>
             ))}
           </dl>
-
-          {/* صندوق الشراء */}
-          <div className="mt-8 rounded-3xl border border-sand-200 bg-surface p-6 shadow-card sm:p-8">
-            {book.isFree ? (
-              <div className="text-center">
-                <div className="font-display text-3xl font-extrabold text-safe">مجاني تمامًا</div>
-                <p className="mt-2 text-ink-muted">سجّل اسمك وبريدك واستلم الكتاب فورًا.</p>
-                <Link href="/free" className="btn-safe mt-5 w-full">
-                  <GiftIcon className="h-5 w-5" /> احصل عليه مجانًا
-                </Link>
-              </div>
-            ) : (
-              <>
-                <div className="mb-5 flex items-baseline justify-between">
-                  <span className="font-display text-lg font-bold text-ink">احصل على نسختك</span>
-                  <span className="tnum font-display text-3xl font-extrabold text-guard">
-                    {formatPrice(book.priceCents, book.currency)}
-                  </span>
-                </div>
-                <PurchasePanel
-                  bookId={book.id}
-                  title={book.title}
-                  amount={priceToDecimalString(book.priceCents)}
-                  currency={book.currency}
-                  priceLabel={formatPrice(book.priceCents, book.currency)}
-                  paypalEnabled={settings.paypalEnabled}
-                  paypalClientId={settings.paypalClientId}
-                  bankEnabled={settings.bankEnabled}
-                  bank={{
-                    name: settings.bankName,
-                    accountName: settings.bankAccountName,
-                    iban: settings.bankIban,
-                    accountNumber: settings.bankAccountNumber,
-                    swift: settings.bankSwift,
-                    instructions: settings.bankInstructions,
-                  }}
-                />
-              </>
-            )}
-          </div>
-
-          {/* مزايا */}
-          <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-bold text-ink-soft">
-            <li className="inline-flex items-center gap-2"><DownloadIcon className="h-4 w-4 text-steel" /> تحميل فوري</li>
-            <li className="inline-flex items-center gap-2"><LockIcon className="h-4 w-4 text-safe" /> رابط آمن ومؤقت</li>
-            <li className="inline-flex items-center gap-2"><CheckIcon className="h-4 w-4 text-shield" /> نسخة أصلية بصيغة PDF</li>
-          </ul>
-
-          {/* مشاركة */}
-          <div className="mt-6 border-t border-sand-100 pt-5">
-            <ShareButtons url={`${base}/books/${book.slug}`} title={book.title} />
-          </div>
         </div>
+
+        {/* الغلاف + صندوق الطلب (سطح المكتب) */}
+        <aside className="order-1 hidden lg:order-2 lg:block">
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className="relative mx-auto w-full max-w-[280px]">
+              <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-gradient-to-br from-shield/20 to-steel/20 blur-2xl" />
+              <div className="aspect-[3/4] overflow-hidden rounded-3xl border border-sand-200 shadow-card-hover">
+                <BookCover bookId={book.id} title={book.title} hasCover={!!book.coverFile} />
+              </div>
+            </div>
+            <div className="mt-6">{ClaimBox}</div>
+          </div>
+        </aside>
       </div>
+
+      {/* لمن هذا الكتاب */}
+      {audienceList.length > 0 && (
+        <section className="mt-16">
+          <h2 className="section-title text-2xl">لمن هذا الكتاب؟</h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            {audienceList.map((a, i) => (
+              <div key={i} className="flex items-start gap-3 rounded-2xl border border-sand-200 bg-surface p-4 shadow-card">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-safe/10 text-safe"><UsersIcon className="h-5 w-5" /></span>
+                <span className="leading-7 text-ink-soft">{a}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* فهرس الفصول */}
+      {chapterList.length > 0 && (
+        <section className="mt-16">
+          <h2 className="section-title text-2xl">فهرس الكتاب وفصوله</h2>
+          <p className="mt-2 text-ink-muted">{chapterList.length} فصلًا تأخذك خطوة بخطوة.</p>
+          <ol className="mt-6 grid gap-3 sm:grid-cols-2">
+            {chapterList.map((c, i) => (
+              <li key={i} className="flex items-start gap-3 rounded-2xl border border-sand-200 bg-surface px-5 py-3.5 shadow-card">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-shield/10 text-sm font-extrabold text-guard tnum">{i + 1}</span>
+                <span className="leading-7 text-ink-soft">{c}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {/* وصايا الكتاب */}
+      {takeawaysList.length > 0 && (
+        <section className="mt-16">
+          <h2 className="section-title text-2xl">وصايا الكتاب</h2>
+          <p className="mt-2 text-ink-muted">خلاصات عملية تبقى معك بعد القراءة.</p>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {takeawaysList.map((t, i) => (
+              <div key={i} className="flex items-start gap-3 rounded-2xl border border-sand-200 bg-gradient-to-br from-shield/5 to-transparent p-5 shadow-card">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-shield text-white"><ShieldIcon className="h-5 w-5" /></span>
+                <p className="leading-8 text-ink-soft">{t}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* شريط الهدية المجانية */}
+      {book.isFree && (
+        <section className="mt-16 overflow-hidden rounded-3xl bg-gradient-to-br from-night to-night-soft p-8 text-center text-white sm:p-12">
+          <span className="mx-auto inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-bold text-shield-light">
+            <GiftIcon className="h-4 w-4" /> هديتك في انتظارك
+          </span>
+          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">احصل على «{book.title}» مجانًا الآن</h2>
+          <p className="mx-auto mt-3 max-w-xl leading-8 text-white/80">
+            سجّل بريدك ويصلك الكتاب فورًا برابط تحميل آمن — هدية مجانية بالكامل من المؤلف محمد المسقري.
+          </p>
+          <a href="#claim" className="btn-safe mx-auto mt-6 w-full max-w-xs">
+            <GiftIcon className="h-5 w-5" /> أرسل لي الكتاب مجانًا
+          </a>
+        </section>
+      )}
 
       {/* كتب من نفس السلسلة */}
       {related.length > 0 && book.series && (
@@ -275,6 +355,19 @@ export default async function BookPage({ params }: { params: { slug: string } })
             <ReviewForm bookId={book.id} />
           </div>
         </div>
+      </section>
+
+      {/* مشاركة */}
+      <section className="mt-12 border-t border-sand-100 pt-6">
+        <ShareButtons url={`${base}/books/${book.slug}`} title={book.title} />
+      </section>
+
+      {/* حقوق الملكية الفكرية والنشر */}
+      <section className="mt-12 rounded-2xl border border-sand-200 bg-sand-50 p-6">
+        <h2 className="flex items-center gap-2 font-display text-lg font-extrabold text-ink">
+          <ShieldIcon className="h-5 w-5 text-guard" /> حقوق الملكية الفكرية والنشر
+        </h2>
+        <p className="mt-3 leading-8 text-ink-muted">{copyrightText}</p>
       </section>
     </div>
   );
