@@ -62,25 +62,39 @@ enum OrderStatus {
   REFUNDED
 }
 
-// طلب شراء مدفوع عبر PayPal
+enum PaymentMethod {
+  PAYPAL
+  BANK
+}
+
+// طلب شراء (PayPal أو تحويل بنكي)
 model Order {
-  id              String      @id @default(cuid())
-  book            Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  id              String        @id @default(cuid())
+  book            Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
   bookId          String
   customerName    String
   customerEmail   String
   amountCents     Int
-  currency        String      @default("USD")
-  status          OrderStatus @default(PENDING)
-  paypalOrderId   String?     @unique
+  currency        String        @default("USD")
+  status          OrderStatus   @default(PENDING)
+  paymentMethod   PaymentMethod @default(PAYPAL)
+  paypalOrderId   String?       @unique
   paypalCaptureId String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  bankReference   String? // مرجع/ملاحظة التحويل البنكي من العميل
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   downloadTokens DownloadToken[]
 
   @@index([status])
   @@index([customerEmail])
+}
+
+// إعدادات المتجر (مفتاح/قيمة) يضبطها المدير من لوحة التحكم
+model Setting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
 }
 
 // تسجيل للحصول على كتاب مجاني (مع تأكيد البريد المزدوج)

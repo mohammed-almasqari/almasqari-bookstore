@@ -1,31 +1,27 @@
 import { Resend } from "resend";
-import { env } from "../env";
+import { getSettings } from "../settings";
 import { confirmEmail, deliveryEmail, receiptEmail, loginLinkEmail } from "./templates";
 
 /**
- * إرسال البريد عبر Resend. إذا لم يُضبط المفتاح، تُسجَّل الرسالة في السجل بدل الفشل
- * (مفيد أثناء التطوير قبل ضبط RESEND_API_KEY).
+ * إرسال البريد عبر Resend. تُقرأ المفاتيح والمرسِل من إعدادات لوحة التحكم
+ * (قاعدة البيانات) مع التراجع لمتغيّرات البيئة. إن لم يُضبط المفتاح تُسجَّل في السجل بدل الفشل.
  */
 
-function client(): Resend | null {
-  if (!env.resend.apiKey) return null;
-  return new Resend(env.resend.apiKey);
-}
-
 async function send(to: string, subject: string, html: string) {
-  const resend = client();
-  if (!resend) {
-    console.warn(`[email] RESEND_API_KEY غير مضبوط — لم تُرسل الرسالة إلى ${to}: ${subject}`);
+  const s = await getSettings();
+  if (!s.resendApiKey) {
+    console.warn(`[email] مفتاح Resend غير مضبوط — لم تُرسل الرسالة إلى ${to}: ${subject}`);
     return { ok: false, skipped: true as const };
   }
   try {
+    const resend = new Resend(s.resendApiKey);
     const payload: Record<string, unknown> = {
-      from: env.resend.from,
+      from: s.emailFrom || "onboarding@resend.dev",
       to,
       subject,
       html,
     };
-    if (env.resend.replyTo) payload.replyTo = env.resend.replyTo;
+    if (s.emailReplyTo) payload.replyTo = s.emailReplyTo;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await resend.emails.send(payload as any);
     if (error) {

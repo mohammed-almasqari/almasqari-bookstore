@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { createPayPalOrder, isPayPalConfigured } from "@/lib/paypal";
+import { createPayPalOrder, isPayPalReady } from "@/lib/paypal";
 import { priceToDecimalString } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -13,8 +13,8 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  if (!isPayPalConfigured()) {
-    return NextResponse.json({ error: "بوابة الدفع غير مهيّأة على الخادم." }, { status: 503 });
+  if (!(await isPayPalReady())) {
+    return NextResponse.json({ error: "بوابة الدفع عبر PayPal غير مفعّلة." }, { status: 503 });
   }
 
   const body = await req.json().catch(() => null);

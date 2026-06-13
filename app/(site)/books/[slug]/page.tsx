@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { env } from "@/lib/env";
+import { getSettings } from "@/lib/settings";
 import BookCover from "@/components/BookCover";
-import BuyButton from "@/components/BuyButton";
+import PurchasePanel from "@/components/PurchasePanel";
 import { formatPrice, priceToDecimalString, formatBytes } from "@/lib/format";
 import { BookIcon, CheckIcon, DownloadIcon, GiftIcon, LockIcon } from "@/components/icons";
 
@@ -22,6 +22,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function BookPage({ params }: { params: { slug: string } }) {
   const book = await getBook(params.slug);
   if (!book || !book.isPublished) notFound();
+
+  const settings = await getSettings();
 
   const facts: [string, string][] = [
     ["المؤلف", book.author],
@@ -93,13 +95,23 @@ export default async function BookPage({ params }: { params: { slug: string } })
                     {formatPrice(book.priceCents, book.currency)}
                   </span>
                 </div>
-                <BuyButton
+                <PurchasePanel
                   bookId={book.id}
                   title={book.title}
                   amount={priceToDecimalString(book.priceCents)}
                   currency={book.currency}
-                  clientId={env.paypal.clientId}
                   priceLabel={formatPrice(book.priceCents, book.currency)}
+                  paypalEnabled={settings.paypalEnabled}
+                  paypalClientId={settings.paypalClientId}
+                  bankEnabled={settings.bankEnabled}
+                  bank={{
+                    name: settings.bankName,
+                    accountName: settings.bankAccountName,
+                    iban: settings.bankIban,
+                    accountNumber: settings.bankAccountNumber,
+                    swift: settings.bankSwift,
+                    instructions: settings.bankInstructions,
+                  }}
                 />
               </>
             )}

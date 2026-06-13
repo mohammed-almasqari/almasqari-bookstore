@@ -1,19 +1,27 @@
-import { env } from "./env";
+import { getSettings } from "./settings";
 
 /**
- * تكامل PayPal عبر REST API (بدون مكتبة خادم إضافية).
- * يعمل في وضعي sandbox و live حسب PAYPAL_ENV.
+ * تكامل PayPal عبر REST API.
+ * تُقرأ المفاتيح من إعدادات لوحة التحكم (قاعدة البيانات) مع التراجع لمتغيّرات البيئة.
  */
 
-function apiBase(): string {
-  return env.paypal.env === "live"
-    ? "https://api-m.paypal.com"
-    : "https://api-m.sandbox.paypal.com";
+async function config() {
+  const s = await getSettings();
+  return {
+    clientId: s.paypalClientId,
+    clientSecret: s.paypalClientSecret,
+    env: s.paypalEnv,
+    enabled: s.paypalEnabled,
+  };
 }
 
-async function getAccessToken(): Promise<string> {
-  const auth = Buffer.from(`${env.paypal.clientId}:${env.paypal.clientSecret}`).toString("base64");
-  const res = await fetch(`${apiBase()}/v1/oauth2/token`, {
+function apiBase(envName: string): string {
+  return envName === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
+}
+
+async function getAccessToken(clientId: string, clientSecret: string, envName: string): Promise<string> {
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+  const res = await fetch(`${apiBase(envName)}/v1/oauth2/token`, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -30,20 +38,17 @@ async function getAccessToken(): Promise<string> {
   return data.access_token;
 }
 
-// إنشاء طلب دفع، يعيد معرّف الطلب من PayPal
 export async function createPayPalOrder(params: {
-  amount: string; // مثل "9.90"
+  amount: string;
   currency: string;
   bookTitle: string;
   referenceId: string;
 }): Promise<{ id: string }> {
-  const token = await getAccessToken();
-  const res = await fetch(`${apiBase()}/v2/checkout/orders`, {
+  const c = await config();
+  const token = await getAccessToken(c.clientId, c.clientSecret, c.env);
+  const res = await fetch(`${apiBase(c.env)}/v2/checkout/orders`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     cache: "no-store",
     body: JSON.stringify({
       intent: "CAPTURE",
@@ -63,7 +68,6 @@ export async function createPayPalOrder(params: {
   return (await res.json()) as { id: string };
 }
 
-// التقاط (تحصيل) الدفع بعد موافقة المشتري
 export async function capturePayPalOrder(orderId: string): Promise<{
   status: string;
   captureId?: string;
@@ -72,13 +76,11 @@ export async function capturePayPalOrder(orderId: string): Promise<{
   amount?: string;
   currency?: string;
 }> {
-  const token = await getAccessToken();
-  const res = await fetch(`${apiBase()}/v2/checkout/orders/${orderId}/capture`, {
+  const c = await config();
+  const token = await getAccessToken(c.clientId, c.clientSecret, c.env);
+  const res = await fetch(`${apiBase(c.env)}/v2/checkout/orders/${orderId}/capture`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     cache: "no-store",
   });
   const data: any = await res.json();
@@ -97,6 +99,8 @@ export async function capturePayPalOrder(orderId: string): Promise<{
   };
 }
 
-export function isPayPalConfigured(): boolean {
-  return Boolean(env.paypal.clientId && env.paypal.clientSecret);
+// مفعّل ومهيّأ (له مفاتيح)؟
+export async function isPayPalReady(): Promise<boolean> {
+  const c = await config();
+  return Boolean(c.enabled && c.clientId && c.clientSecret);
 }

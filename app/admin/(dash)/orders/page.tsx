@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { formatPrice, formatDateTime } from "@/lib/format";
+import ConfirmOrderButton from "@/components/admin/ConfirmOrderButton";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الطلبات" };
@@ -18,17 +19,17 @@ export default async function OrdersPage() {
     take: 200,
   });
 
-  const paidTotal = orders
-    .filter((o) => o.status === "PAID")
-    .reduce((sum, o) => sum + o.amountCents, 0);
+  const paidTotal = orders.filter((o) => o.status === "PAID").reduce((s, o) => s + o.amountCents, 0);
+  const pendingBank = orders.filter((o) => o.status === "PENDING" && o.paymentMethod === "BANK").length;
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-extrabold text-ink">الطلبات</h1>
-          <p className="mt-1 text-sm text-ink-muted">{orders.length} طلب · الإجمالي المدفوع {formatPrice(paidTotal, "USD")}</p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-extrabold text-ink">الطلبات</h1>
+        <p className="mt-1 text-sm text-ink-muted">
+          {orders.length} طلب · الإجمالي المدفوع {formatPrice(paidTotal, "USD")}
+          {pendingBank > 0 && <span className="text-amber-700"> · {pendingBank} تحويل بنكي بانتظار التأكيد</span>}
+        </p>
       </div>
 
       {orders.length === 0 ? (
@@ -37,14 +38,16 @@ export default async function OrdersPage() {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-sand-200 bg-white shadow-card">
-          <table className="w-full min-w-[680px] text-right text-sm">
+          <table className="w-full min-w-[760px] text-right text-sm">
             <thead className="border-b border-sand-200 bg-sand-50 text-xs text-ink-muted">
               <tr>
                 <th className="p-4 font-bold">العميل</th>
                 <th className="p-4 font-bold">الكتاب</th>
                 <th className="p-4 font-bold">المبلغ</th>
+                <th className="p-4 font-bold">الطريقة</th>
                 <th className="p-4 font-bold">الحالة</th>
                 <th className="p-4 font-bold">التاريخ</th>
+                <th className="p-4 font-bold">إجراء</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-sand-100">
@@ -55,13 +58,24 @@ export default async function OrdersPage() {
                     <td className="p-4">
                       <div className="font-bold text-ink">{o.customerName}</div>
                       <div dir="ltr" className="text-right text-xs text-ink-muted">{o.customerEmail}</div>
+                      {o.bankReference && <div className="text-xs text-ink-muted">مرجع: {o.bankReference}</div>}
                     </td>
                     <td className="p-4 text-ink-soft">{o.book.title}</td>
                     <td className="p-4 tnum font-bold text-ink">{formatPrice(o.amountCents, o.currency)}</td>
                     <td className="p-4">
-                      <span className={`badge ${st.cls}`}>{st.label}</span>
+                      <span className={`badge ${o.paymentMethod === "BANK" ? "bg-steel/10 text-steel" : "bg-shield/10 text-guard"}`}>
+                        {o.paymentMethod === "BANK" ? "تحويل بنكي" : "PayPal"}
+                      </span>
                     </td>
+                    <td className="p-4"><span className={`badge ${st.cls}`}>{st.label}</span></td>
                     <td className="p-4 text-xs text-ink-muted">{formatDateTime(o.createdAt)}</td>
+                    <td className="p-4">
+                      {o.status === "PENDING" && o.paymentMethod === "BANK" ? (
+                        <ConfirmOrderButton id={o.id} />
+                      ) : (
+                        <span className="text-xs text-ink-muted">—</span>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
