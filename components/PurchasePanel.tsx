@@ -14,7 +14,8 @@ type BankInfo = {
 };
 
 type Props = {
-  bookId: string;
+  bookId?: string;
+  seriesId?: string;
   title: string;
   amount: string;
   currency: string;
@@ -52,11 +53,13 @@ function useReferralCode() {
 /** حقل كوبون الخصم المشترك بين طرق الدفع */
 function CouponField({
   bookId,
+  seriesId,
   applied,
   onApply,
   onRemove,
 }: {
-  bookId: string;
+  bookId?: string;
+  seriesId?: string;
   applied: AppliedCoupon | null;
   onApply: (c: AppliedCoupon) => void;
   onRemove: () => void;
@@ -74,7 +77,7 @@ function CouponField({
       const res = await fetch("/api/coupon/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: c, bookId }),
+        body: JSON.stringify({ code: c, bookId, seriesId }),
       });
       const d = await res.json();
       if (!d.ok) {
@@ -138,13 +141,15 @@ function BankRow({ label, value }: { label: string; value: string }) {
 
 function BankFlow({
   bookId,
+  seriesId,
   title,
   priceLabel,
   bank,
   coupon,
   refCode,
 }: {
-  bookId: string;
+  bookId?: string;
+  seriesId?: string;
   title: string;
   priceLabel: string;
   bank: BankInfo;
@@ -168,7 +173,7 @@ function BankFlow({
       const res = await fetch("/api/checkout/bank", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId, name, email, reference, coupon, ref: refCode }),
+        body: JSON.stringify({ bookId, seriesId, name, email, reference, coupon, ref: refCode }),
       });
       const d = await res.json();
       if (!res.ok) { setError(d.error || "تعذّر إرسال الطلب."); return; }
@@ -238,7 +243,7 @@ export default function PurchasePanel(props: Props) {
 
   return (
     <div>
-      <CouponField bookId={props.bookId} applied={coupon} onApply={setCoupon} onRemove={() => setCoupon(null)} />
+      <CouponField bookId={props.bookId} seriesId={props.seriesId} applied={coupon} onApply={setCoupon} onRemove={() => setCoupon(null)} />
 
       {coupon && (
         <div className="mb-4 flex items-baseline justify-between rounded-xl bg-shield/5 px-4 py-2.5 text-sm">
@@ -262,6 +267,7 @@ export default function PurchasePanel(props: Props) {
         <BuyButton
           key={effAmount}
           bookId={props.bookId}
+          seriesId={props.seriesId}
           title={props.title}
           amount={effAmount}
           currency={props.currency}
@@ -272,7 +278,7 @@ export default function PurchasePanel(props: Props) {
         />
       )}
       {tab === "bank" && props.bankEnabled && (
-        <BankFlow bookId={props.bookId} title={props.title} priceLabel={effLabel} bank={props.bank} coupon={coupon?.code} refCode={refCode} />
+        <BankFlow bookId={props.bookId} seriesId={props.seriesId} title={props.title} priceLabel={effLabel} bank={props.bank} coupon={coupon?.code} refCode={refCode} />
       )}
     </div>
   );

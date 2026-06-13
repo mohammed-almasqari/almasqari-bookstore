@@ -3,11 +3,13 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { validateCoupon } from "@/lib/coupons";
+import { resolveBundle } from "@/lib/bundles";
 
 export const dynamic = "force-dynamic";
 
 const schema = z.object({
-  bookId: z.string().min(1),
+  bookId: z.string().min(1).optional(),
+  seriesId: z.string().min(1).optional(),
   name: z.string().trim().min(2).max(80),
   email: z.string().email().max(160),
   reference: z.string().trim().max(200).optional(),
@@ -25,18 +27,38 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "بيانات غير صحيحة." }, { status: 400 });
 
-  const { bookId, name, reference } = parsed.data;
+  const { name, reference } = parsed.data;
   const email = parsed.data.email.toLowerCase().trim();
 
-  const book = await prisma.book.findFirst({ where: { id: bookId, isFree: false, isPublished: true } });
-  if (!book) return NextResponse.json({ error: "الكتاب غير متاح للشراء." }, { status: 404 });
+  // تحديد هدف الشراء: حزمة سلسلة أو كتاب مفرد
+  let basePriceCents: number;
+  let currency: string;
+  let bookId: string;
+  let seriesId: string | null = null;
+
+  if (parsed.data.seriesId) {
+    const bundle = await resolveBundle(parsed.data.seriesId);
+    if (!bundle) return NextResponse.json({ error: "الحزمة غير متاحة للشراء." }, { status: 404 });
+    basePriceCents = bundle.priceCents;
+    currency = bundle.currency;
+    bookId = bundle.firstBookId;
+    seriesId = bundle.seriesId;
+  } else if (parsed.data.bookId) {
+    const book = await prisma.book.findFirst({ where: { id: parsed.data.bookId, isFree: false, isPublished: true } });
+    if (!book) return NextResponse.json({ error: "الكتاب غير متاح للشراء." }, { status: 404 });
+    basePriceCents = book.priceCents;
+    currency = book.currency;
+    bookId = book.id;
+  } else {
+    return NextResponse.json({ error: "بيانات غير صحيحة." }, { status: 400 });
+  }
 
   // تطبيق كوبون الخصم (إن وُجد)
-  let amountCents = book.priceCents;
+  let amountCents = basePriceCents;
   let couponCode: string | null = null;
   let discountCents = 0;
   if (parsed.data.coupon) {
-    const c = await validateCoupon(parsed.data.coupon, book.priceCents, book.currency);
+    const c = await validateCoupon(parsed.data.coupon, basePriceCents, currency);
     if (!c.ok) return NextResponse.json({ error: c.error }, { status: 400 });
     amountCents = c.finalCents;
     discountCents = c.discountCents;
@@ -46,11 +68,12 @@ export async function POST(req: NextRequest) {
 
   await prisma.order.create({
     data: {
-      bookId: book.id,
+      bookId,
+      seriesId,
       customerName: name,
       customerEmail: email,
       amountCents,
-      currency: book.currency,
+      currency,
       status: "PENDING",
       paymentMethod: "BANK",
       bankReference: reference || null,

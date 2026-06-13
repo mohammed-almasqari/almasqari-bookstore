@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       title,
       description: (body?.description || "").trim() || null,
       sortOrder: Number(body?.sortOrder) || 0,
+      bundlePriceCents: Math.max(0, Math.round(Number(body?.bundlePriceCents) || 0)),
       isPublished: body?.isPublished === false ? false : true,
     },
   });

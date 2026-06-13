@@ -14,7 +14,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
 
 export default async function OrdersPage() {
   const orders = await prisma.order.findMany({
-    include: { book: true },
+    include: { book: true, series: true },
     orderBy: { createdAt: "desc" },
     take: 200,
   });
@@ -60,7 +60,16 @@ export default async function OrdersPage() {
                       <div dir="ltr" className="text-right text-xs text-ink-muted">{o.customerEmail}</div>
                       {o.bankReference && <div className="text-xs text-ink-muted">مرجع: {o.bankReference}</div>}
                     </td>
-                    <td className="p-4 text-ink-soft">{o.book.title}</td>
+                    <td className="p-4 text-ink-soft">
+                      {o.series ? (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="badge bg-shield/10 text-guard">حزمة</span>
+                          سلسلة «{o.series.title}»
+                        </span>
+                      ) : (
+                        o.book.title
+                      )}
+                    </td>
                     <td className="p-4 tnum font-bold text-ink">
                       {formatPrice(o.amountCents, o.currency)}
                       {o.discountCents > 0 && (

@@ -2,29 +2,44 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { validateCoupon } from "@/lib/coupons";
+import { resolveBundle } from "@/lib/bundles";
 
 export const dynamic = "force-dynamic";
 
 const schema = z.object({
   code: z.string().trim().min(1).max(40),
-  bookId: z.string().min(1),
+  bookId: z.string().min(1).optional(),
+  seriesId: z.string().min(1).optional(),
 });
 
-// نقطة عامة: يستدعيها المتجر للتحقق من كوبون وحساب السعر بعد الخصم
+// نقطة عامة: يستدعيها المتجر للتحقق من كوبون وحساب السعر بعد الخصم (كتاب أو حزمة سلسلة)
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ ok: false, error: "بيانات غير صحيحة." }, { status: 400 });
 
-  const book = await prisma.book.findFirst({
-    where: { id: parsed.data.bookId, isFree: false, isPublished: true },
-    select: { priceCents: true, currency: true },
-  });
-  if (!book || book.priceCents <= 0) {
-    return NextResponse.json({ ok: false, error: "الكتاب غير متاح للشراء." }, { status: 404 });
+  let priceCents = 0;
+  let currency = "USD";
+  if (parsed.data.seriesId) {
+    const bundle = await resolveBundle(parsed.data.seriesId);
+    if (!bundle) return NextResponse.json({ ok: false, error: "الحزمة غير متاحة." }, { status: 404 });
+    priceCents = bundle.priceCents;
+    currency = bundle.currency;
+  } else if (parsed.data.bookId) {
+    const book = await prisma.book.findFirst({
+      where: { id: parsed.data.bookId, isFree: false, isPublished: true },
+      select: { priceCents: true, currency: true },
+    });
+    if (!book || book.priceCents <= 0) {
+      return NextResponse.json({ ok: false, error: "الكتاب غير متاح للشراء." }, { status: 404 });
+    }
+    priceCents = book.priceCents;
+    currency = book.currency;
+  } else {
+    return NextResponse.json({ ok: false, error: "بيانات غير صحيحة." }, { status: 400 });
   }
 
-  const result = await validateCoupon(parsed.data.code, book.priceCents, book.currency);
+  const result = await validateCoupon(parsed.data.code, priceCents, currency);
   if (!result.ok) return NextResponse.json(result, { status: 200 });
 
   return NextResponse.json({

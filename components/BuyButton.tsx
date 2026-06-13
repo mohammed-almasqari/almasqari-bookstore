@@ -8,7 +8,8 @@ import {
 import { CheckIcon, DownloadIcon, LockIcon, MailIcon, SpinnerIcon } from "./icons";
 
 type Props = {
-  bookId: string;
+  bookId?: string;
+  seriesId?: string;
   title: string;
   amount: string; // "9.90"
   currency: string;
@@ -22,7 +23,7 @@ function isValidEmail(s: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
-export default function BuyButton({ bookId, title, amount, currency, clientId, priceLabel, coupon, refCode }: Props) {
+export default function BuyButton({ bookId, seriesId, title, amount, currency, clientId, priceLabel, coupon, refCode }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [touched, setTouched] = useState(false);
@@ -110,7 +111,7 @@ export default function BuyButton({ bookId, title, amount, currency, clientId, p
               const res = await fetch("/api/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ bookId, name, email, coupon, ref: refCode }),
+                body: JSON.stringify({ bookId, seriesId, name, email, coupon, ref: refCode }),
               });
               const data = await res.json();
               if (!res.ok || !data.paypalOrderId) {

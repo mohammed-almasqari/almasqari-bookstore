@@ -17,6 +17,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if ("description" in body) data.description = (body.description || "").trim() || null;
   if ("sortOrder" in body) data.sortOrder = Number(body.sortOrder) || 0;
   if ("isPublished" in body) data.isPublished = !!body.isPublished;
+  if ("bundlePriceCents" in body) data.bundlePriceCents = Math.max(0, Math.round(Number(body.bundlePriceCents) || 0));
 
   const updated = await prisma.series.update({ where: { id: s.id }, data });
   return NextResponse.json({ ok: true, id: updated.id });

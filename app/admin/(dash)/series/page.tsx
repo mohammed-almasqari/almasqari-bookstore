@@ -16,6 +16,7 @@ export default async function AdminSeriesPage() {
     description: s.description,
     sortOrder: s.sortOrder,
     isPublished: s.isPublished,
+    bundlePriceCents: s.bundlePriceCents,
     bookCount: s._count.books,
   }));
 

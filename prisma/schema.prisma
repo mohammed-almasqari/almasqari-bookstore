@@ -80,16 +80,19 @@ model Review {
 
 // سلسلة كتب تجمع عدة كتب بترتيب قراءة موصى به
 model Series {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  description String?  @db.Text
-  isPublished Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  description     String?  @db.Text
+  isPublished     Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  // سعر الحزمة (السلسلة كاملة) بالسنت — 0 يعني لا عرض حزمة
+  bundlePriceCents Int     @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  books Book[]
+  books  Book[]
+  orders Order[]
 }
 
 enum OrderStatus {
@@ -114,6 +117,9 @@ model Order {
   id              String        @id @default(cuid())
   book            Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
   bookId          String
+  // للطلبات من نوع حزمة سلسلة: السلسلة المشتراة (bookId يشير لأول كتاب فيها)
+  series          Series?       @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  seriesId        String?
   customerName    String
   customerEmail   String
   amountCents     Int

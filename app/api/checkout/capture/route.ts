@@ -4,9 +4,8 @@ import { prisma } from "@/lib/db";
 import { capturePayPalOrder } from "@/lib/paypal";
 import { createDownloadToken } from "@/lib/tokens";
 import { absoluteUrl } from "@/lib/env";
-import { formatPrice, formatDate } from "@/lib/format";
-import { sendReceiptEmail, sendDeliveryEmail } from "@/lib/email/send";
 import { incrementCouponUse } from "@/lib/coupons";
+import { fulfillOrder, EXPIRY_DAYS } from "@/lib/fulfillment";
 
 export const dynamic = "force-dynamic";
 
@@ -15,8 +14,6 @@ const schema = z.object({
   name: z.string().trim().min(2).max(80).optional(),
   email: z.string().email().max(160).optional(),
 });
-
-const EXPIRY_DAYS = 30;
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -27,7 +24,7 @@ export async function POST(req: NextRequest) {
 
   const order = await prisma.order.findUnique({
     where: { paypalOrderId },
-    include: { book: true },
+    include: { book: true, series: true },
   });
   if (!order) return NextResponse.json({ error: "لم يُعثر على الطلب." }, { status: 404 });
 
@@ -56,39 +53,14 @@ export async function POST(req: NextRequest) {
     const updated = await prisma.order.update({
       where: { id: order.id },
       data: { status: "PAID", paypalCaptureId: capture.captureId },
-      include: { book: true },
+      include: { book: true, series: true },
     });
 
     // تثبيت استخدام الكوبون بعد اكتمال الدفع فعليًا
     await incrementCouponUse(updated.couponCode);
 
-    const dl = await createDownloadToken({
-      bookId: updated.bookId,
-      email: updated.customerEmail,
-      orderId: updated.id,
-      days: EXPIRY_DAYS,
-    });
-    const downloadUrl = absoluteUrl(`/api/download/${dl.token}`);
-    const amountLabel = formatPrice(updated.amountCents, updated.currency);
-
-    // إيصال الشراء + تسليم الكتاب
-    await Promise.allSettled([
-      sendReceiptEmail(updated.customerEmail, {
-        name: updated.customerName,
-        bookTitle: updated.book.title,
-        amount: amountLabel,
-        orderId: updated.id,
-        date: formatDate(updated.createdAt),
-        downloadUrl,
-      }),
-      sendDeliveryEmail(updated.customerEmail, {
-        name: updated.customerName,
-        bookTitle: updated.book.title,
-        downloadUrl,
-        expiresLabel: `${EXPIRY_DAYS} يومًا`,
-        paid: true,
-      }),
-    ]);
+    // إنشاء روابط التحميل وإرسال الإيصال والتسليم (كتاب مفرد أو حزمة)
+    const downloadUrl = await fulfillOrder(updated);
 
     return NextResponse.json({ ok: true, downloadUrl });
   } catch (e) {

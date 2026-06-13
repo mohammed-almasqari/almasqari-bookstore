@@ -168,6 +168,51 @@ export function deliveryEmail(opts: {
   };
 }
 
+// ---------- 2ب) تسليم حزمة سلسلة (عدة كتب) ----------
+export function bundleDeliveryEmail(opts: {
+  name: string;
+  seriesTitle: string;
+  books: { title: string; downloadUrl: string }[];
+  expiresLabel: string;
+}): { subject: string; html: string } {
+  const items = opts.books
+    .map(
+      (b, i) => `
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+             style="background:${C.sand};border:1px solid ${C.border};border-radius:14px;margin:0 0 12px;">
+        <tr>
+          <td style="padding:14px 18px;">
+            <div style="font-size:15px;font-weight:700;color:${C.ink};margin-bottom:8px;">
+              ${i + 1}. ${escapeHtml(b.title)}
+            </div>
+            <a href="${b.downloadUrl}" target="_blank"
+               style="display:inline-block;padding:9px 22px;background:${C.safe};color:#fff;
+                      font-size:14px;font-weight:700;text-decoration:none;border-radius:10px;">
+              تحميل الكتاب
+            </a>
+          </td>
+        </tr>
+      </table>`
+    )
+    .join("");
+  const body = `
+    ${heading("حزمتك جاهزة للتحميل 📚")}
+    ${paragraph(`${escapeHtml(opts.name)}، تم تأكيد شرائك لحزمة سلسلة <b style="color:${C.ink}">«${escapeHtml(opts.seriesTitle)}»</b> كاملةً. هذه روابط تحميل كتبها:`)}
+    ${items}
+    ${infoCard([
+      ["عدد الكتب", String(opts.books.length)],
+      ["صيغة الملفات", "PDF"],
+      ["صلاحية الروابط", opts.expiresLabel],
+    ])}
+    ${paragraph(`<span style="font-size:13.5px;color:${C.muted}">الروابط خاصة بك، يرجى عدم مشاركتها. إن انتهت صلاحيتها يمكنك طلب روابط جديدة من المتجر.</span>`)}
+    ${paragraph(`قراءة ممتعة ونافعة 🌿`)}
+  `;
+  return {
+    subject: `حزمة «${opts.seriesTitle}» جاهزة للتحميل (${opts.books.length} كتب)`,
+    html: baseLayout({ title: "تحميل الحزمة", preview: `روابط تحميل ${opts.books.length} كتب بالداخل`, body }),
+  };
+}
+
 // ---------- 3) إيصال الشراء ----------
 export function receiptEmail(opts: {
   name: string;
