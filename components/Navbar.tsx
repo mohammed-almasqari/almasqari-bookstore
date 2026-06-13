@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "./Logo";
+import ThemeToggle from "./ThemeToggle";
 import { GiftIcon, MenuIcon, CloseIcon, HeartIcon, UsersIcon } from "./icons";
 
 const links = [
@@ -45,10 +46,11 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link href="/wishlist" aria-label="المفضلة" className="hidden h-10 w-10 place-items-center rounded-xl border border-sand-200 bg-white text-ink-soft hover:text-alert lg:grid">
+          <ThemeToggle />
+          <Link href="/wishlist" aria-label="المفضلة" className="hidden h-10 w-10 place-items-center rounded-xl border border-sand-200 bg-surface text-ink-soft hover:text-alert lg:grid">
             <HeartIcon className="h-5 w-5" />
           </Link>
-          <Link href="/account" aria-label="مكتبتي" className="hidden h-10 w-10 place-items-center rounded-xl border border-sand-200 bg-white text-ink-soft hover:text-shield lg:grid">
+          <Link href="/account" aria-label="مكتبتي" className="hidden h-10 w-10 place-items-center rounded-xl border border-sand-200 bg-surface text-ink-soft hover:text-shield lg:grid">
             <UsersIcon className="h-5 w-5" />
           </Link>
           <Link href="/free" className="btn-primary hidden h-11 px-5 text-sm sm:inline-flex">
@@ -57,7 +59,7 @@ export default function Navbar() {
           </Link>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="grid h-11 w-11 place-items-center rounded-xl border border-sand-200 bg-white text-ink lg:hidden"
+            className="grid h-11 w-11 place-items-center rounded-xl border border-sand-200 bg-surface text-ink lg:hidden"
             aria-label="القائمة"
           >
             {open ? <CloseIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
@@ -66,7 +68,7 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-sand-200 bg-white lg:hidden">
+        <div className="border-t border-sand-200 bg-surface lg:hidden">
           <div className="container-x flex flex-col py-3">
             {[...links, ...extraMobile].map((l) => (
               <Link

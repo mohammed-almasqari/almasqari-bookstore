@@ -109,7 +109,7 @@ export default function SeriesManager({ initial }: { initial: SeriesRow[] }) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={create} className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+      <form onSubmit={create} className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
         <h2 className="mb-4 font-display text-lg font-extrabold text-ink">إضافة سلسلة</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
@@ -135,7 +135,7 @@ export default function SeriesManager({ initial }: { initial: SeriesRow[] }) {
         </button>
       </form>
 
-      <div className="overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-card">
+      <div className="overflow-hidden rounded-2xl border border-sand-200 bg-surface shadow-card">
         <div className="border-b border-sand-100 bg-sand-50 px-4 py-2.5 text-xs font-bold text-ink-muted">
           السلاسل — اضبط «سعر الحزمة» ليظهر عرض شراء السلسلة كاملة في صفحتها
         </div>

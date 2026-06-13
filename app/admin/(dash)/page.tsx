@@ -65,7 +65,7 @@ export default async function DashboardPage() {
         {cards.map((c) => {
           const Icon = c.icon;
           return (
-            <div key={c.label} className="rounded-2xl border border-sand-200 bg-white p-5 shadow-card">
+            <div key={c.label} className="rounded-2xl border border-sand-200 bg-surface p-5 shadow-card">
               <span className={`grid h-11 w-11 place-items-center rounded-xl ${c.bg} ${c.color}`}>
                 <Icon className="h-6 w-6" />
               </span>
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* أحدث الطلبات */}
-        <div className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+        <div className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-display text-lg font-extrabold text-ink">أحدث الطلبات</h2>
             <Link href="/admin/orders" className="text-sm font-bold text-shield hover:underline">عرض الكل</Link>
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* أحدث المشتركين */}
-        <div className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+        <div className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-display text-lg font-extrabold text-ink">أحدث المشتركين</h2>
             <Link href="/admin/subscribers" className="text-sm font-bold text-shield hover:underline">عرض الكل</Link>

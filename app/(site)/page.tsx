@@ -246,7 +246,7 @@ export default async function HomePage() {
       {/* عن المؤلف */}
       <section id="about" className="container-x mt-24 scroll-mt-24">
         <div className="card overflow-hidden md:grid md:grid-cols-[auto_1fr]">
-          <div className="grid place-items-center bg-gradient-to-br from-ink to-ink-soft p-10 text-white md:w-72">
+          <div className="grid place-items-center bg-gradient-to-br from-night to-night-soft p-10 text-white md:w-72">
             <div className="text-center">
               <div className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-shield/20 font-display text-4xl font-extrabold text-shield-light">
                 م

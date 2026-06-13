@@ -18,7 +18,7 @@ export default async function AboutPage() {
     <div className="container-x py-12">
       {/* البطل */}
       <section className="card overflow-hidden md:grid md:grid-cols-[auto_1fr]">
-        <div className="grid place-items-center bg-gradient-to-br from-ink to-ink-soft p-10 text-white md:w-80">
+        <div className="grid place-items-center bg-gradient-to-br from-night to-night-soft p-10 text-white md:w-80">
           <div className="text-center">
             <div className="mx-auto grid h-28 w-28 place-items-center rounded-full bg-shield/20 font-display text-5xl font-extrabold text-shield-light">
               م

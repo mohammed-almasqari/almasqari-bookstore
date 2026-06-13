@@ -20,12 +20,12 @@ export default async function AdminBlogPage() {
       </div>
 
       {posts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-sand-200 bg-white p-12 text-center">
+        <div className="rounded-2xl border border-dashed border-sand-200 bg-surface p-12 text-center">
           <p className="text-ink-muted">لا توجد مقالات بعد.</p>
           <Link href="/admin/blog/new" className="btn-primary mt-4 inline-flex"><PlusIcon className="h-5 w-5" /> اكتب أول مقال</Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-card">
+        <div className="overflow-hidden rounded-2xl border border-sand-200 bg-surface shadow-card">
           <ul className="divide-y divide-sand-100">
             {posts.map((p) => (
               <li key={p.id} className="flex items-center gap-4 p-4">

@@ -1,6 +1,10 @@
 import type { Config } from "tailwindcss";
 
+// لون مبني على متغيّر CSS مع دعم شفافية Tailwind (<alpha-value>)
+const v = (name: string) => `rgb(var(${name}) / <alpha-value>)`;
+
 const config: Config = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,12 +12,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // هوية "الدرع الحارس" المعتمدة في الكتاب
+        // هوية "الدرع الحارس" — الألوان الدلالية تُقرأ من متغيّرات CSS لتدعم الوضع الليلي
+        // (قيمها في الوضع الفاتح مطابقة تمامًا للأصل، فلا يتغيّر شيء في الوضع الفاتح)
         ink: {
+          DEFAULT: v("--c-ink"),
+          soft: v("--c-ink-soft"),
+          muted: v("--c-ink-muted"),
+        },
+        // أسطح البطاقات (كانت bg-white) — تتحوّل داكنة في الوضع الليلي
+        surface: {
+          DEFAULT: v("--c-surface"),
+          soft: v("--c-surface-soft"),
+        },
+        // لون داكن ثابت في الوضعين (للتذييل والشريط الجانبي والتدرّجات الداكنة)
+        night: {
           DEFAULT: "#1E1B2E",
           soft: "#2A2640",
-          muted: "#4B475F",
         },
+        sand: {
+          50: v("--c-sand-50"),
+          100: v("--c-sand-100"),
+          200: v("--c-sand-200"),
+        },
+        // ألوان العلامة الثابتة (تظهر جيدًا على الفاتح والداكن)
         guard: {
           DEFAULT: "#7C2D12",
           light: "#9A3A18",
@@ -32,11 +53,6 @@ const config: Config = {
         },
         alert: {
           DEFAULT: "#DC2626",
-        },
-        sand: {
-          50: "#FBF7F0",
-          100: "#F5EEE2",
-          200: "#EADCC6",
         },
       },
       fontFamily: {

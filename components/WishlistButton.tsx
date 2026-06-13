@@ -40,7 +40,7 @@ export default function WishlistButton({ bookId, floating = true }: { bookId: st
       className={
         floating
           ? "grid h-9 w-9 place-items-center rounded-full bg-white/90 text-alert shadow-sm backdrop-blur transition-transform hover:scale-110"
-          : "inline-flex h-10 items-center gap-2 rounded-xl border border-sand-200 bg-white px-4 font-bold text-ink"
+          : "inline-flex h-10 items-center gap-2 rounded-xl border border-sand-200 bg-surface px-4 font-bold text-ink"
       }
     >
       <HeartIcon className="h-5 w-5" fill={on ? "currentColor" : "none"} />

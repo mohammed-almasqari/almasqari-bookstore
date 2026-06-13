@@ -24,7 +24,7 @@ export default function BookCover({ bookId, title, hasCover, className = "" }: P
   }
   return (
     <div
-      className={`relative flex h-full w-full flex-col items-center justify-center gap-3 overflow-hidden bg-gradient-to-br from-ink via-ink-soft to-guard p-6 text-center ${className}`}
+      className={`relative flex h-full w-full flex-col items-center justify-center gap-3 overflow-hidden bg-gradient-to-br from-night via-night-soft to-guard p-6 text-center ${className}`}
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-20"

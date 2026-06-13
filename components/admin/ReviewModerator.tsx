@@ -38,7 +38,7 @@ export default function ReviewModerator({ initial }: { initial: ReviewRow[] }) {
   }
 
   if (initial.length === 0) {
-    return <div className="rounded-2xl border border-dashed border-sand-200 bg-white p-12 text-center text-ink-muted">لا توجد تقييمات بعد.</div>;
+    return <div className="rounded-2xl border border-dashed border-sand-200 bg-surface p-12 text-center text-ink-muted">لا توجد تقييمات بعد.</div>;
   }
 
   return (

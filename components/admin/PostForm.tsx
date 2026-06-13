@@ -46,7 +46,7 @@ export default function PostForm({ initial, mode }: { initial?: PostFormData; mo
   return (
     <form onSubmit={onSubmit} className="space-y-5">
       {error && <div className="rounded-xl border border-alert/30 bg-alert/5 p-3 text-sm font-bold text-alert">{error}</div>}
-      <div className="rounded-2xl border border-sand-200 bg-white p-6">
+      <div className="rounded-2xl border border-sand-200 bg-surface p-6">
         <div className="space-y-4">
           <div>
             <label className="label">عنوان المقال *</label>
@@ -74,7 +74,7 @@ export default function PostForm({ initial, mode }: { initial?: PostFormData; mo
           <button type="button" onClick={() => setIsPublished((v) => !v)} className="flex w-full max-w-xs items-center justify-between gap-3 rounded-xl border border-sand-200 bg-sand-50 p-3">
             <span className="font-bold text-ink">منشور</span>
             <span className={`relative h-6 w-11 rounded-full transition-colors ${isPublished ? "bg-safe" : "bg-sand-200"}`}>
-              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${isPublished ? "right-0.5" : "right-[22px]"}`} />
+              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface shadow transition-all ${isPublished ? "right-0.5" : "right-[22px]"}`} />
             </span>
           </button>
         </div>

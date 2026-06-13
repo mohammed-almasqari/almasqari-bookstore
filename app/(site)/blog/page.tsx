@@ -27,7 +27,7 @@ export default async function BlogPage() {
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((p) => (
             <Link key={p.id} href={`/blog/${p.slug}`} className="card card-hover flex flex-col overflow-hidden">
-              <div className="aspect-[16/9] overflow-hidden bg-gradient-to-br from-ink to-ink-soft">
+              <div className="aspect-[16/9] overflow-hidden bg-gradient-to-br from-night to-night-soft">
                 {p.coverFile ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={`/api/post-cover/${p.id}`} alt={p.title} loading="lazy" className="h-full w-full object-cover" />

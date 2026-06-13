@@ -50,7 +50,7 @@ export default function ReviewForm({ bookId }: { bookId: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-sand-200 bg-white p-6">
+    <form onSubmit={submit} className="rounded-2xl border border-sand-200 bg-surface p-6">
       <h3 className="font-display text-lg font-extrabold text-ink">أضف تقييمك</h3>
       <div className="mt-4 space-y-4">
         <div>

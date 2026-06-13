@@ -30,7 +30,7 @@ function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange
         {hint && <span className="block text-xs text-ink-muted">{hint}</span>}
       </span>
       <span className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${checked ? "bg-safe" : "bg-sand-200"}`}>
-        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${checked ? "right-0.5" : "right-[22px]"}`} />
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface shadow transition-all ${checked ? "right-0.5" : "right-[22px]"}`} />
       </span>
     </button>
   );
@@ -130,7 +130,7 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
   return (
     <div className="space-y-6">
       {/* PayPal */}
-      <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+      <section className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
         <div className="mb-4 flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-shield/10 text-guard"><CartIcon className="h-5 w-5" /></span>
           <h2 className="font-display text-lg font-extrabold text-ink">الدفع عبر PayPal</h2>
@@ -180,7 +180,7 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
       </section>
 
       {/* تحويل بنكي */}
-      <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+      <section className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
         <div className="mb-4 flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-steel/10 text-steel"><LockIcon className="h-5 w-5" /></span>
           <h2 className="font-display text-lg font-extrabold text-ink">الدفع بتحويل بنكي</h2>
@@ -205,7 +205,7 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
       </section>
 
       {/* Resend */}
-      <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+      <section className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
         <div className="mb-4 flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-safe/10 text-safe"><MailIcon className="h-5 w-5" /></span>
           <h2 className="font-display text-lg font-extrabold text-ink">البريد الإلكتروني (Resend)</h2>
@@ -252,7 +252,7 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
       </section>
 
       {/* التحليلات */}
-      <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+      <section className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
         <div className="mb-4 flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-ink/5 text-ink"><ChartIcon className="h-5 w-5" /></span>
           <h2 className="font-display text-lg font-extrabold text-ink">التحليلات</h2>

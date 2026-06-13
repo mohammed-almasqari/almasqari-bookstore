@@ -254,10 +254,10 @@ export default function PurchasePanel(props: Props) {
 
       {methods.length > 1 && (
         <div className="mb-4 inline-flex rounded-xl border border-sand-200 bg-sand-50 p-1">
-          <button onClick={() => setTab("paypal")} className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold transition-colors ${tab === "paypal" ? "bg-white text-guard shadow-sm" : "text-ink-muted"}`}>
+          <button onClick={() => setTab("paypal")} className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold transition-colors ${tab === "paypal" ? "bg-surface text-guard shadow-sm" : "text-ink-muted"}`}>
             <CartIcon className="h-4 w-4" /> PayPal
           </button>
-          <button onClick={() => setTab("bank")} className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold transition-colors ${tab === "bank" ? "bg-white text-steel shadow-sm" : "text-ink-muted"}`}>
+          <button onClick={() => setTab("bank")} className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold transition-colors ${tab === "bank" ? "bg-surface text-steel shadow-sm" : "text-ink-muted"}`}>
             <LockIcon className="h-4 w-4" /> تحويل بنكي
           </button>
         </div>

@@ -33,11 +33,11 @@ export default async function OrdersPage() {
       </div>
 
       {orders.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-sand-200 bg-white p-12 text-center text-ink-muted">
+        <div className="rounded-2xl border border-dashed border-sand-200 bg-surface p-12 text-center text-ink-muted">
           لا توجد طلبات بعد.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-sand-200 bg-white shadow-card">
+        <div className="overflow-x-auto rounded-2xl border border-sand-200 bg-surface shadow-card">
           <table className="w-full min-w-[760px] text-right text-sm">
             <thead className="border-b border-sand-200 bg-sand-50 text-xs text-ink-muted">
               <tr>

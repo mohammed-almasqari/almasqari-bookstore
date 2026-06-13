@@ -24,11 +24,11 @@ export default async function SubscribersPage() {
       </div>
 
       {subs.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-sand-200 bg-white p-12 text-center text-ink-muted">
+        <div className="rounded-2xl border border-dashed border-sand-200 bg-surface p-12 text-center text-ink-muted">
           لا يوجد مشتركون بعد. شارك صفحة الكتب المجانية لجمع القرّاء.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-sand-200 bg-white shadow-card">
+        <div className="overflow-x-auto rounded-2xl border border-sand-200 bg-surface shadow-card">
           <table className="w-full min-w-[620px] text-right text-sm">
             <thead className="border-b border-sand-200 bg-sand-50 text-xs text-ink-muted">
               <tr>

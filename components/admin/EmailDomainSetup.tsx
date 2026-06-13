@@ -30,7 +30,7 @@ export default function EmailDomainSetup() {
   const statusColor = data?.status === "verified" ? "text-safe" : "text-amber-700";
 
   return (
-    <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+    <section className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
       <div className="mb-4 flex items-center gap-2">
         <span className="grid h-9 w-9 place-items-center rounded-lg bg-safe/10 text-safe"><MailIcon className="h-5 w-5" /></span>
         <h2 className="font-display text-lg font-extrabold text-ink">توثيق نطاق البريد (للإرسال للعملاء)</h2>

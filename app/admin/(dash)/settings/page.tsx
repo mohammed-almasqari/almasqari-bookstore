@@ -25,7 +25,7 @@ export default async function SettingsPage() {
       <EmailDomainSetup />
 
       {/* حساب المدير */}
-      <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+      <section className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
         <h2 className="font-display text-lg font-extrabold text-ink">حساب المدير</h2>
         <p className="mt-1 text-sm text-ink-muted">
           {session?.name} · <span dir="ltr">{session?.email}</span>
@@ -37,7 +37,7 @@ export default async function SettingsPage() {
       </section>
 
       {/* معلومات المتجر */}
-      <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+      <section className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
         <h2 className="font-display text-lg font-extrabold text-ink">معلومات المتجر</h2>
         <dl className="mt-4 divide-y divide-sand-100">
           {([

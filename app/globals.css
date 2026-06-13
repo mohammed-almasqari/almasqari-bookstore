@@ -3,7 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --bg: #fbf7f0;
+  /* الوضع الفاتح — قيم مطابقة تمامًا للهوية الأصلية (RGB مفصولة بمسافات) */
+  --c-ink: 30 27 46;
+  --c-ink-soft: 42 38 64;
+  --c-ink-muted: 75 71 95;
+  --c-sand-50: 251 247 240;
+  --c-sand-100: 245 238 226;
+  --c-sand-200: 234 220 198;
+  --c-surface: 255 255 255;
+  --c-surface-soft: 251 247 240;
+  --bg: 251 247 240;
+  --glow-amber: 0.07;
+  --glow-steel: 0.06;
+}
+
+.dark {
+  /* الوضع الليلي — نصوص فاتحة وأسطح داكنة دافئة */
+  --c-ink: 244 242 250;
+  --c-ink-soft: 205 201 220;
+  --c-ink-muted: 150 144 170;
+  --c-sand-50: 30 27 42;
+  --c-sand-100: 37 33 51;
+  --c-sand-200: 58 53 80;
+  --c-surface: 36 32 51;
+  --c-surface-soft: 30 27 42;
+  --bg: 18 16 26;
+  --glow-amber: 0.10;
+  --glow-steel: 0.10;
 }
 
 * {
@@ -16,13 +42,14 @@ html {
 
 body {
   background:
-    radial-gradient(1200px 600px at 85% -10%, rgba(217, 119, 6, 0.07), transparent 60%),
-    radial-gradient(900px 500px at 0% 0%, rgba(3, 105, 161, 0.06), transparent 55%),
-    var(--bg);
-  color: #1e1b2e;
+    radial-gradient(1200px 600px at 85% -10%, rgba(217, 119, 6, var(--glow-amber)), transparent 60%),
+    radial-gradient(900px 500px at 0% 0%, rgba(3, 105, 161, var(--glow-steel)), transparent 55%),
+    rgb(var(--bg));
+  color: rgb(var(--c-ink));
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* أرقام لاتينية أوضح للأسعار ضمن سياق عربي */
@@ -44,24 +71,24 @@ body {
     @apply btn bg-shield text-white shadow-glow hover:bg-shield-light hover:-translate-y-0.5 focus-visible:ring-shield/30;
   }
   .btn-dark {
-    @apply btn bg-ink text-white hover:bg-ink-soft hover:-translate-y-0.5 focus-visible:ring-ink/20;
+    @apply btn bg-night text-white hover:bg-night-soft hover:-translate-y-0.5 focus-visible:ring-night/20;
   }
   .btn-safe {
     @apply btn bg-safe text-white hover:bg-safe-light hover:-translate-y-0.5 focus-visible:ring-safe/30;
   }
   .btn-ghost {
-    @apply btn border border-sand-200 bg-white/70 text-ink hover:border-shield hover:text-shield;
+    @apply btn border border-sand-200 bg-surface/70 text-ink hover:border-shield hover:text-shield;
   }
 
   .card {
-    @apply rounded-2xl border border-sand-200 bg-white shadow-card transition-all duration-300;
+    @apply rounded-2xl border border-sand-200 bg-surface shadow-card transition-all duration-300;
   }
   .card-hover {
     @apply hover:-translate-y-1 hover:shadow-card-hover;
   }
 
   .input {
-    @apply w-full rounded-xl border border-sand-200 bg-white px-4 py-3 text-base text-ink
+    @apply w-full rounded-xl border border-sand-200 bg-surface px-4 py-3 text-base text-ink
            placeholder:text-ink-muted/60 focus:border-shield focus:outline-none focus:ring-4 focus:ring-shield/15;
   }
   .label {

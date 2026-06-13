@@ -158,7 +158,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
               <h2 className="font-display text-xl font-extrabold text-ink">فهرس الفصول</h2>
               <ol className="mt-3 space-y-2">
                 {chapterList.map((c, i) => (
-                  <li key={i} className="flex items-start gap-3 rounded-xl border border-sand-200 bg-white px-4 py-2.5">
+                  <li key={i} className="flex items-start gap-3 rounded-xl border border-sand-200 bg-surface px-4 py-2.5">
                     <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-shield/10 text-xs font-bold text-guard tnum">{i + 1}</span>
                     <span className="text-ink-soft">{c}</span>
                   </li>
@@ -168,7 +168,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
           )}
 
           {/* بطاقة الحقائق */}
-          <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-1 rounded-2xl border border-sand-200 bg-white p-6 sm:grid-cols-3">
+          <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-1 rounded-2xl border border-sand-200 bg-surface p-6 sm:grid-cols-3">
             {facts.map(([k, v]) => (
               <div key={k} className="flex items-center justify-between border-b border-sand-100 py-2.5 sm:block sm:border-0">
                 <dt className="text-sm text-ink-muted">{k}</dt>
@@ -178,7 +178,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
           </dl>
 
           {/* صندوق الشراء */}
-          <div className="mt-8 rounded-3xl border border-sand-200 bg-white p-6 shadow-card sm:p-8">
+          <div className="mt-8 rounded-3xl border border-sand-200 bg-surface p-6 shadow-card sm:p-8">
             {book.isFree ? (
               <div className="text-center">
                 <div className="font-display text-3xl font-extrabold text-safe">مجاني تمامًا</div>
@@ -253,7 +253,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
         <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_360px]">
           <div>
             {reviewCount === 0 ? (
-              <p className="rounded-2xl border border-dashed border-sand-200 bg-white p-8 text-center text-ink-muted">
+              <p className="rounded-2xl border border-dashed border-sand-200 bg-surface p-8 text-center text-ink-muted">
                 لا توجد تقييمات بعد — كن أول من يقيّم هذا الكتاب.
               </p>
             ) : (

@@ -41,14 +41,14 @@ function Switch({
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className="flex w-full items-center justify-between gap-3 rounded-xl border border-sand-200 bg-white p-3 text-right"
+      className="flex w-full items-center justify-between gap-3 rounded-xl border border-sand-200 bg-surface p-3 text-right"
     >
       <span>
         <span className="font-bold text-ink">{label}</span>
         {hint && <span className="block text-xs text-ink-muted">{hint}</span>}
       </span>
       <span className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${checked ? "bg-safe" : "bg-sand-200"}`}>
-        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${checked ? "right-0.5" : "right-[22px]"}`} />
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface shadow transition-all ${checked ? "right-0.5" : "right-[22px]"}`} />
       </span>
     </button>
   );
@@ -105,7 +105,7 @@ export default function BookForm({
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
-          <div className="rounded-2xl border border-sand-200 bg-white p-6">
+          <div className="rounded-2xl border border-sand-200 bg-surface p-6">
             <h3 className="mb-4 font-display text-lg font-extrabold text-ink">معلومات الكتاب</h3>
             <div className="space-y-4">
               <div>
@@ -138,7 +138,7 @@ export default function BookForm({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-sand-200 bg-white p-6">
+          <div className="rounded-2xl border border-sand-200 bg-surface p-6">
             <h3 className="mb-4 font-display text-lg font-extrabold text-ink">الملفات</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
@@ -161,7 +161,7 @@ export default function BookForm({
         </div>
 
         <div className="space-y-5">
-          <div className="rounded-2xl border border-sand-200 bg-white p-6">
+          <div className="rounded-2xl border border-sand-200 bg-surface p-6">
             <h3 className="mb-4 font-display text-lg font-extrabold text-ink">النشر والسعر</h3>
             <div className="space-y-3">
               <Switch label="منشور" hint="يظهر في المتجر" checked={isPublished} onChange={setIsPublished} />
@@ -187,7 +187,7 @@ export default function BookForm({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-sand-200 bg-white p-6">
+          <div className="rounded-2xl border border-sand-200 bg-surface p-6">
             <h3 className="mb-4 font-display text-lg font-extrabold text-ink">إعدادات إضافية</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">

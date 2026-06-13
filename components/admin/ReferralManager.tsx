@@ -122,7 +122,7 @@ export default function ReferralManager({ initial, baseUrl }: { initial: Referra
 
   return (
     <div className="space-y-6">
-      <form onSubmit={create} className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+      <form onSubmit={create} className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
         <h2 className="mb-4 font-display text-lg font-extrabold text-ink">إضافة شريك إحالة</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
@@ -148,7 +148,7 @@ export default function ReferralManager({ initial, baseUrl }: { initial: Referra
         </button>
       </form>
 
-      <div className="overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-card">
+      <div className="overflow-hidden rounded-2xl border border-sand-200 bg-surface shadow-card">
         {initial.length === 0 ? (
           <p className="p-8 text-center text-ink-muted">لا يوجد شركاء إحالة بعد.</p>
         ) : (

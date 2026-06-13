@@ -55,7 +55,7 @@ export default async function SeriesPage({ params }: { params: { slug: string } 
       </nav>
 
       {/* بطل السلسلة */}
-      <div className="card overflow-hidden bg-gradient-to-br from-ink to-ink-soft p-8 text-white md:p-12">
+      <div className="card overflow-hidden bg-gradient-to-br from-night to-night-soft p-8 text-white md:p-12">
         <span className="badge bg-white/15 text-shield-light"><BookIcon className="h-4 w-4" /> {series.books.length} كتب في السلسلة</span>
         <h1 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">{series.title}</h1>
         {series.description && <p className="mt-4 max-w-2xl leading-9 text-white/80">{series.description}</p>}
@@ -87,7 +87,7 @@ export default async function SeriesPage({ params }: { params: { slug: string } 
               )}
             </div>
           </div>
-          <div className="rounded-2xl border border-sand-200 bg-white p-5 shadow-card">
+          <div className="rounded-2xl border border-sand-200 bg-surface p-5 shadow-card">
             <PurchasePanel
               seriesId={series.id}
               title={`حزمة «${series.title}»`}

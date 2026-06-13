@@ -39,14 +39,14 @@ export default function AdminLoginPage() {
     <div className="grid min-h-screen place-items-center p-5">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-ink text-shield-light shadow-card">
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-night text-shield-light shadow-card">
             <ShieldIcon className="h-9 w-9" strokeWidth={2} />
           </span>
           <h1 className="mt-4 font-display text-2xl font-extrabold text-ink">لوحة تحكم المتجر</h1>
           <p className="mt-1 text-sm text-ink-muted">سجّل دخولك لإدارة الكتب والطلبات</p>
         </div>
 
-        <form onSubmit={submit} className="rounded-2xl border border-sand-200 bg-white p-7 shadow-card">
+        <form onSubmit={submit} className="rounded-2xl border border-sand-200 bg-surface p-7 shadow-card">
           <div className="space-y-4">
             <div>
               <label className="label">البريد الإلكتروني</label>

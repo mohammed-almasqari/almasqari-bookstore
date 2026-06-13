@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   ShieldIcon,
   ChartIcon,
@@ -95,7 +96,10 @@ export default function AdminSidebar({ name }: { name: string }) {
         >
           <LogoutIcon className="h-5 w-5" /> تسجيل الخروج
         </button>
-        <div className="px-4 pt-2 text-[11px] text-white/40">مسجّل: {name}</div>
+        <div className="flex items-center justify-between px-4 pt-2">
+          <span className="text-[11px] text-white/40">مسجّل: {name}</span>
+          <ThemeToggle className="grid h-8 w-8 place-items-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white" />
+        </div>
       </div>
     </div>
   );
@@ -103,7 +107,7 @@ export default function AdminSidebar({ name }: { name: string }) {
   return (
     <>
       {/* شريط علوي للجوال */}
-      <div className="sticky top-0 z-40 flex items-center justify-between border-b border-ink-soft bg-ink px-4 py-3 lg:hidden">
+      <div className="sticky top-0 z-40 flex items-center justify-between border-b border-ink-soft bg-night px-4 py-3 lg:hidden">
         <div className="flex items-center gap-2 text-white">
           <ShieldIcon className="h-6 w-6 text-shield-light" />
           <span className="font-display font-extrabold">لوحة التحكم</span>
@@ -114,13 +118,13 @@ export default function AdminSidebar({ name }: { name: string }) {
       </div>
 
       {/* الشريط الجانبي الثابت */}
-      <aside className="fixed inset-y-0 right-0 z-30 hidden w-64 bg-ink lg:block">{content}</aside>
+      <aside className="fixed inset-y-0 right-0 z-30 hidden w-64 bg-night lg:block">{content}</aside>
 
       {/* درج الجوال */}
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 right-0 w-72 bg-ink">
+          <div className="absolute inset-y-0 right-0 w-72 bg-night">
             <button onClick={() => setOpen(false)} className="absolute left-3 top-4 text-white/70" aria-label="إغلاق">
               <CloseIcon className="h-6 w-6" />
             </button>

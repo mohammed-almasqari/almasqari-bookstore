@@ -48,9 +48,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     founder: { "@type": "Person", name: "محمد المسقري" },
   };
 
+  // تطبيق الوضع المحفوظ قبل الرسم لمنع وميض اللون (افتراضيًا فاتح ما لم يُختر الداكن)
+  const themeScript = `(function(){try{if(localStorage.getItem('theme')==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
+
   return (
     <html lang="ar" dir="rtl" className={`${tajawal.variable} ${cairo.variable}`}>
       <body className="font-sans antialiased">
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
         {children}
         <RefCapture />

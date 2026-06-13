@@ -27,14 +27,14 @@ export default async function AdminBooksPage() {
       </div>
 
       {books.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-sand-200 bg-white p-12 text-center">
+        <div className="rounded-2xl border border-dashed border-sand-200 bg-surface p-12 text-center">
           <p className="text-ink-muted">لا توجد كتب بعد. ابدأ بإضافة كتابك الأول.</p>
           <Link href="/admin/books/new" className="btn-primary mt-4 inline-flex">
             <PlusIcon className="h-5 w-5" /> إضافة كتاب
           </Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-card">
+        <div className="overflow-hidden rounded-2xl border border-sand-200 bg-surface shadow-card">
           <ul className="divide-y divide-sand-100">
             {books.map((b) => (
               <li key={b.id} className="flex items-center gap-4 p-4">

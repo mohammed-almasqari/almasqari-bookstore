@@ -37,7 +37,7 @@ export default function NewsletterForm({ count }: { count: number }) {
   }
 
   return (
-    <form onSubmit={send} className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+    <form onSubmit={send} className="rounded-2xl border border-sand-200 bg-surface p-6 shadow-card">
       <p className="mb-4 text-sm text-ink-muted">تُرسل إلى {count} مشترك مؤكَّد وموافق على التحديثات، بتصميم بريد المتجر.</p>
       <div className="space-y-4">
         <div>

@@ -11,7 +11,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
   const links = [
     { label: "واتساب", href: `https://wa.me/?text=${t}%20${u}`, cls: "bg-[#25D366] text-white" },
     { label: "تيليجرام", href: `https://t.me/share/url?url=${u}&text=${t}`, cls: "bg-[#0088cc] text-white" },
-    { label: "X", href: `https://twitter.com/intent/tweet?text=${t}&url=${u}`, cls: "bg-ink text-white" },
+    { label: "X", href: `https://twitter.com/intent/tweet?text=${t}&url=${u}`, cls: "bg-night text-white" },
   ];
 
   async function copy() {
@@ -38,7 +38,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
       ))}
       <button
         onClick={copy}
-        className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-sand-200 bg-white px-3 text-sm font-bold text-ink transition-transform hover:-translate-y-0.5"
+        className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-sand-200 bg-surface px-3 text-sm font-bold text-ink transition-transform hover:-translate-y-0.5"
       >
         {copied ? <><CheckIcon className="h-4 w-4 text-safe" /> نُسخ</> : "نسخ الرابط"}
       </button>
