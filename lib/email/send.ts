@@ -54,3 +54,14 @@ export function sendLoginLinkEmail(to: string, vars: Parameters<typeof loginLink
   const { subject, html } = loginLinkEmail(vars);
   return send(to, subject, html);
 }
+
+// رسالة اختبار للتحقق من عمل Resend من لوحة التحكم
+export function sendTestEmail(to: string) {
+  const html = `<!DOCTYPE html><html dir="rtl" lang="ar"><body style="margin:0;background:#FBF7F0;font-family:Tajawal,Arial,sans-serif">
+    <div style="max-width:480px;margin:24px auto;background:#fff;border-radius:16px;padding:32px;text-align:center;border:1px solid #EADCC6">
+      <div style="font-size:40px">✅</div>
+      <h2 style="color:#1E1B2E;margin:8px 0">يعمل البريد بنجاح</h2>
+      <p style="color:#4B475F;line-height:1.9">هذه رسالة اختبار من <b>مكتبة محمد المسقري</b>. إن وصلتك، فإعدادات Resend تعمل بشكل صحيح ويمكنك إرسال رسائل التأكيد والتسليم والإيصالات لعملائك.</p>
+    </div></body></html>`;
+  return send(to, "اختبار البريد — مكتبة محمد المسقري", html);
+}

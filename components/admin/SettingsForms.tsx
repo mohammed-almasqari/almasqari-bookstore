@@ -63,8 +63,29 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [testTo, setTestTo] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testMsg, setTestMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const upd = (k: string, v: any) => setF((s) => ({ ...s, [k]: v }));
+
+  async function testEmail() {
+    setTesting(true); setTestMsg(null);
+    try {
+      const res = await fetch("/api/admin/test-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: testTo }),
+      });
+      const d = await res.json();
+      if (d.ok) setTestMsg({ ok: true, text: `أُرسلت رسالة اختبار إلى ${d.to} بنجاح ✓ تحقّق من البريد.` });
+      else setTestMsg({ ok: false, text: d.error || "فشل الإرسال." });
+    } catch {
+      setTestMsg({ ok: false, text: "حدث خطأ في الشبكة." });
+    } finally {
+      setTesting(false);
+    }
+  }
 
   async function save() {
     setLoading(true); setError(null); setDone(false);
@@ -172,6 +193,27 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
               <li>عندها تُرسل رسائل التأكيد والتسليم والإيصال تلقائيًا.</li>
             </ol>
           </Instructions>
+
+          {/* اختبار الإرسال */}
+          <div className="rounded-xl border border-sand-200 bg-sand-50 p-4">
+            <div className="mb-2 text-sm font-bold text-ink">اختبار الإرسال</div>
+            <p className="mb-3 text-xs text-ink-muted">احفظ المفتاح أولًا، ثم أرسل رسالة اختبار. (مع المرسِل التجريبي onboarding@resend.dev لا يقبل Resend الإرسال إلا إلى بريد حسابك في Resend.)</p>
+            <div className="flex flex-wrap items-end gap-2">
+              <div className="flex-1" style={{ minWidth: 200 }}>
+                <label className="label">أرسل إلى (اتركه فارغًا لبريد المدير)</label>
+                <input className="input" type="email" dir="ltr" value={testTo} onChange={(e) => setTestTo(e.target.value)} placeholder="you@example.com" />
+              </div>
+              <button type="button" onClick={testEmail} disabled={testing} className="btn-ghost h-12">
+                {testing ? <SpinnerIcon className="h-5 w-5" /> : <MailIcon className="h-5 w-5" />}
+                اختبار
+              </button>
+            </div>
+            {testMsg && (
+              <div className={`mt-3 rounded-lg p-3 text-sm font-bold ${testMsg.ok ? "bg-safe/10 text-safe" : "bg-alert/10 text-alert"}`}>
+                {testMsg.text}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
