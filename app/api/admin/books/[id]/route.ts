@@ -51,6 +51,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     isPublished: fdHas(fd, "isPublished") ? fdBool(fd, "isPublished") : book.isPublished,
     featured: fdHas(fd, "featured") ? fdBool(fd, "featured") : book.featured,
     sortOrder: fdHas(fd, "sortOrder") ? fdNum(fd, "sortOrder") : book.sortOrder,
+    seriesId: fdHas(fd, "seriesId") ? (fdStr(fd, "seriesId") || null) : book.seriesId,
+    seriesOrder: fdHas(fd, "seriesOrder") ? fdNum(fd, "seriesOrder") : book.seriesOrder,
+    chapters: fdHas(fd, "chapters") ? (fdStr(fd, "chapters") || null) : book.chapters,
   };
 
   try {

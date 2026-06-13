@@ -35,9 +35,22 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: env.siteName,
+    url: env.siteUrl,
+    logo: `${env.siteUrl.replace(/\/$/, "")}/icon.png`,
+    description: "مكتبة رقمية عربية في الأمن الرقمي والحماية من الاحتيال للكاتب محمد المسقري.",
+    founder: { "@type": "Person", name: "محمد المسقري" },
+  };
+
   return (
     <html lang="ar" dir="rtl" className={`${tajawal.variable} ${cairo.variable}`}>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
+        {children}
+      </body>
     </html>
   );
 }

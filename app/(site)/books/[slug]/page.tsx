@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 import { getSettings } from "@/lib/settings";
 import BookCover from "@/components/BookCover";
+import BookCard, { type BookCardData } from "@/components/BookCard";
 import PurchasePanel from "@/components/PurchasePanel";
 import { formatPrice, priceToDecimalString, formatBytes } from "@/lib/format";
 import { BookIcon, CheckIcon, DownloadIcon, GiftIcon, LockIcon } from "@/components/icons";
@@ -10,13 +12,28 @@ import { BookIcon, CheckIcon, DownloadIcon, GiftIcon, LockIcon } from "@/compone
 export const dynamic = "force-dynamic";
 
 async function getBook(slug: string) {
-  return prisma.book.findUnique({ where: { slug } });
+  return prisma.book.findUnique({ where: { slug }, include: { series: true } });
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const book = await getBook(params.slug);
   if (!book) return { title: "كتاب غير موجود" };
-  return { title: book.title, description: book.subtitle || book.description.slice(0, 150) };
+  const desc = (book.subtitle || book.description).slice(0, 155);
+  const base = env.siteUrl.replace(/\/$/, "");
+  const images = book.coverFile ? [`${base}/api/cover/${book.id}`] : undefined;
+  return {
+    title: book.title,
+    description: desc,
+    alternates: { canonical: `${base}/books/${book.slug}` },
+    openGraph: {
+      title: `${book.title} — ${book.author}`,
+      description: desc,
+      type: "book",
+      locale: "ar_AR",
+      url: `${base}/books/${book.slug}`,
+      ...(images ? { images } : {}),
+    },
+  };
 }
 
 export default async function BookPage({ params }: { params: { slug: string } }) {
@@ -24,6 +41,45 @@ export default async function BookPage({ params }: { params: { slug: string } })
   if (!book || !book.isPublished) notFound();
 
   const settings = await getSettings();
+
+  const related = book.seriesId
+    ? ((await prisma.book.findMany({
+        where: { seriesId: book.seriesId, isPublished: true, id: { not: book.id } },
+        orderBy: { seriesOrder: "asc" },
+        take: 6,
+      })) as BookCardData[])
+    : [];
+  const chapterList = (book.chapters || "")
+    .split("\n")
+    .map((c) => c.trim())
+    .filter(Boolean);
+
+  const base = env.siteUrl.replace(/\/$/, "");
+  const bookLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    name: book.title,
+    author: { "@type": "Person", name: book.author },
+    inLanguage: book.language,
+    description: book.description.slice(0, 300),
+    ...(book.coverFile ? { image: `${base}/api/cover/${book.id}` } : {}),
+    offers: {
+      "@type": "Offer",
+      price: book.isFree ? "0" : (book.priceCents / 100).toFixed(2),
+      priceCurrency: book.currency,
+      availability: "https://schema.org/InStock",
+      url: `${base}/books/${book.slug}`,
+    },
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "الرئيسية", item: base },
+      { "@type": "ListItem", position: 2, name: "المكتبة", item: `${base}/books` },
+      { "@type": "ListItem", position: 3, name: book.title, item: `${base}/books/${book.slug}` },
+    ],
+  };
 
   const facts: [string, string][] = [
     ["المؤلف", book.author],
@@ -36,10 +92,18 @@ export default async function BookPage({ params }: { params: { slug: string } })
 
   return (
     <div className="container-x py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <nav className="mb-6 text-sm text-ink-muted">
         <Link href="/" className="hover:text-shield">الرئيسية</Link>
         <span className="mx-2">/</span>
         <Link href="/books" className="hover:text-shield">المكتبة</Link>
+        {book.series && (
+          <>
+            <span className="mx-2">/</span>
+            <Link href={`/series/${book.series.slug}`} className="hover:text-shield">{book.series.title}</Link>
+          </>
+        )}
         <span className="mx-2">/</span>
         <span className="text-ink-soft">{book.title}</span>
       </nav>
@@ -66,6 +130,20 @@ export default async function BookPage({ params }: { params: { slug: string } })
           <div className="mt-6 max-w-2xl whitespace-pre-line leading-9 text-ink-soft">
             {book.description}
           </div>
+
+          {chapterList.length > 0 && (
+            <div className="mt-8">
+              <h2 className="font-display text-xl font-extrabold text-ink">فهرس الفصول</h2>
+              <ol className="mt-3 space-y-2">
+                {chapterList.map((c, i) => (
+                  <li key={i} className="flex items-start gap-3 rounded-xl border border-sand-200 bg-white px-4 py-2.5">
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-shield/10 text-xs font-bold text-guard tnum">{i + 1}</span>
+                    <span className="text-ink-soft">{c}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
 
           {/* بطاقة الحقائق */}
           <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-1 rounded-2xl border border-sand-200 bg-white p-6 sm:grid-cols-3">
@@ -125,6 +203,19 @@ export default async function BookPage({ params }: { params: { slug: string } })
           </ul>
         </div>
       </div>
+
+      {/* كتب من نفس السلسلة */}
+      {related.length > 0 && book.series && (
+        <section className="mt-16">
+          <div className="flex items-end justify-between">
+            <h2 className="section-title text-2xl">من سلسلة «{book.series.title}»</h2>
+            <Link href={`/series/${book.series.slug}`} className="text-sm font-bold text-shield hover:underline">السلسلة كاملة ←</Link>
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+            {related.map((b) => <BookCard key={b.id} book={b} />)}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

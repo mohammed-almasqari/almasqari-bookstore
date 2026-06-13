@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api
+Disallow: /account
+
+Sitemap: https://store.dalilai.net/sitemap.xml

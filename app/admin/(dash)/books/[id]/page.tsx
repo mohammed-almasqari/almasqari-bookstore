@@ -7,7 +7,10 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "تعديل كتاب" };
 
 export default async function EditBookPage({ params }: { params: { id: string } }) {
-  const book = await prisma.book.findUnique({ where: { id: params.id } });
+  const [book, series] = await Promise.all([
+    prisma.book.findUnique({ where: { id: params.id } }),
+    prisma.series.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }], select: { id: true, title: true } }),
+  ]);
   if (!book) notFound();
 
   return (
@@ -19,6 +22,7 @@ export default async function EditBookPage({ params }: { params: { id: string } 
       </div>
       <BookForm
         mode="edit"
+        seriesList={series}
         initial={{
           id: book.id,
           title: book.title,
@@ -27,6 +31,7 @@ export default async function EditBookPage({ params }: { params: { id: string } 
           author: book.author,
           category: book.category,
           description: book.description,
+          chapters: book.chapters,
           pages: book.pages,
           isFree: book.isFree,
           priceCents: book.priceCents,
@@ -34,6 +39,8 @@ export default async function EditBookPage({ params }: { params: { id: string } 
           isPublished: book.isPublished,
           featured: book.featured,
           sortOrder: book.sortOrder,
+          seriesId: book.seriesId,
+          seriesOrder: book.seriesOrder,
           coverFile: book.coverFile,
           bookFile: book.bookFile,
         }}

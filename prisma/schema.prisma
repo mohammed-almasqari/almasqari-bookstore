@@ -42,6 +42,12 @@ model Book {
   pages       Int?
   language    String   @default("ar")
   category    String?
+  // فهرس الفصول (سطر لكل فصل) يظهر في صفحة الكتاب
+  chapters    String?  @db.Text
+  // السلسلة التي ينتمي إليها الكتاب وترتيبه فيها
+  series      Series?  @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  seriesId    String?
+  seriesOrder Int      @default(0)
   // ترتيب العرض
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
@@ -53,6 +59,22 @@ model Book {
 
   @@index([isPublished, isFree])
   @@index([featured])
+  @@index([seriesId])
+  @@index([category])
+}
+
+// سلسلة كتب تجمع عدة كتب بترتيب قراءة موصى به
+model Series {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?  @db.Text
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  books Book[]
 }
 
 enum OrderStatus {

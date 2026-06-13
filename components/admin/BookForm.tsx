@@ -19,6 +19,9 @@ export type BookFormData = {
   isPublished?: boolean;
   featured?: boolean;
   sortOrder?: number;
+  seriesId?: string | null;
+  seriesOrder?: number;
+  chapters?: string | null;
   coverFile?: string | null;
   bookFile?: string | null;
 };
@@ -51,7 +54,15 @@ function Switch({
   );
 }
 
-export default function BookForm({ initial, mode }: { initial?: BookFormData; mode: "create" | "edit" }) {
+export default function BookForm({
+  initial,
+  mode,
+  seriesList = [],
+}: {
+  initial?: BookFormData;
+  mode: "create" | "edit";
+  seriesList?: { id: string; title: string }[];
+}) {
   const router = useRouter();
   const [isFree, setIsFree] = useState(!!initial?.isFree);
   const [isPublished, setIsPublished] = useState(initial ? !!initial.isPublished : true);
@@ -108,6 +119,11 @@ export default function BookForm({ initial, mode }: { initial?: BookFormData; mo
               <div>
                 <label className="label">الوصف *</label>
                 <textarea name="description" className="input min-h-[150px]" defaultValue={initial?.description} required placeholder="نبذة عن محتوى الكتاب وفائدته للقارئ…" />
+              </div>
+              <div>
+                <label className="label">فهرس الفصول (فصل في كل سطر)</label>
+                <textarea name="chapters" className="input min-h-[110px]" defaultValue={initial?.chapters ?? ""} placeholder={"الفصل الأول: ...\nالفصل الثاني: ...\nالفصل الثالث: ..."} />
+                <p className="mt-1 text-xs text-ink-muted">يظهر كقائمة مرقّمة في صفحة الكتاب لإبراز قيمته قبل الشراء.</p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -174,6 +190,21 @@ export default function BookForm({ initial, mode }: { initial?: BookFormData; mo
           <div className="rounded-2xl border border-sand-200 bg-white p-6">
             <h3 className="mb-4 font-display text-lg font-extrabold text-ink">إعدادات إضافية</h3>
             <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">السلسلة</label>
+                  <select name="seriesId" className="input" defaultValue={initial?.seriesId ?? ""}>
+                    <option value="">بدون سلسلة</option>
+                    {seriesList.map((s) => (
+                      <option key={s.id} value={s.id}>{s.title}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="label">ترتيبه في السلسلة</label>
+                  <input name="seriesOrder" type="number" dir="ltr" className="input" defaultValue={initial?.seriesOrder ?? 0} />
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="label">عدد الصفحات</label>

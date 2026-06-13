@@ -20,9 +20,9 @@ export default function Footer() {
           <h4 className="mb-4 font-display text-base font-extrabold text-shield-light">روابط سريعة</h4>
           <ul className="space-y-3 text-sm text-white/75">
             <li><Link href="/books" className="hover:text-shield-light">المكتبة الكاملة</Link></li>
+            <li><Link href="/series" className="hover:text-shield-light">السلاسل</Link></li>
             <li><Link href="/free" className="hover:text-shield-light">الكتب المجانية</Link></li>
             <li><Link href="/#about" className="hover:text-shield-light">عن المؤلف</Link></li>
-            <li><Link href="/admin" className="hover:text-shield-light">لوحة التحكم</Link></li>
           </ul>
         </div>
 

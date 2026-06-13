@@ -13,11 +13,13 @@ import {
   MenuIcon,
   CloseIcon,
   SettingsIcon,
+  GridIcon,
 } from "@/components/icons";
 
 const nav = [
   { href: "/admin", label: "لوحة المعلومات", icon: ChartIcon, exact: true },
   { href: "/admin/books", label: "الكتب", icon: BookIcon },
+  { href: "/admin/series", label: "السلاسل", icon: GridIcon },
   { href: "/admin/orders", label: "الطلبات", icon: ReceiptIcon },
   { href: "/admin/subscribers", label: "المشتركون", icon: UsersIcon },
   { href: "/admin/settings", label: "الإعدادات", icon: SettingsIcon },

@@ -9,6 +9,7 @@ import { GiftIcon, MenuIcon, CloseIcon } from "./icons";
 const links = [
   { href: "/", label: "الرئيسية" },
   { href: "/books", label: "المكتبة" },
+  { href: "/series", label: "السلاسل" },
   { href: "/free", label: "كتب مجانية" },
   { href: "/account", label: "مكتبتي" },
   { href: "/#about", label: "عن المؤلف" },

@@ -10,12 +10,13 @@ import {
   LockIcon,
   CheckIcon,
   StarIcon,
+  BookIcon,
 } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
 async function getData() {
-  const [featured, books] = await Promise.all([
+  const [featured, allBooks, series] = await Promise.all([
     prisma.book.findFirst({
       where: { isPublished: true, isFree: true },
       orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
@@ -23,14 +24,29 @@ async function getData() {
     prisma.book.findMany({
       where: { isPublished: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-      take: 12,
+      include: { _count: { select: { orders: true, freeClaims: true } } },
+    }),
+    prisma.series.findMany({
+      where: { isPublished: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      take: 3,
+      include: { books: { where: { isPublished: true }, orderBy: { seriesOrder: "asc" }, select: { id: true, title: true, coverFile: true } } },
     }),
   ]);
-  return { featured, books: books as BookCardData[] };
+
+  const books = allBooks.slice(0, 12) as unknown as BookCardData[];
+  const popular = [...allBooks]
+    .map((b) => ({ b, score: b._count.orders + b._count.freeClaims }))
+    .filter((x) => x.score > 0)
+    .sort((a, c) => c.score - a.score)
+    .slice(0, 4)
+    .map((x) => x.b as unknown as BookCardData);
+
+  return { featured, books, series, popular };
 }
 
 export default async function HomePage() {
-  const { featured, books } = await getData();
+  const { featured, books, series, popular } = await getData();
 
   return (
     <>
@@ -130,6 +146,52 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+      {/* السلاسل */}
+      {series.length > 0 && (
+        <section className="container-x mt-20">
+          <div className="flex items-end justify-between">
+            <div>
+              <h2 className="section-title">السلاسل</h2>
+              <p className="mt-2 text-ink-muted">رحلات معرفية متكاملة — اقرأها بالترتيب.</p>
+            </div>
+            <Link href="/series" className="hidden text-sm font-bold text-shield hover:underline sm:block">كل السلاسل ←</Link>
+          </div>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {series.map((s) => (
+              <Link key={s.id} href={`/series/${s.slug}`} className="card card-hover flex items-center gap-4 p-5">
+                <div className="flex -space-x-3 space-x-reverse">
+                  {s.books.slice(0, 3).map((b) => (
+                    <div key={b.id} className="h-20 w-14 overflow-hidden rounded-lg border-2 border-white shadow-card">
+                      <BookCover bookId={b.id} title={b.title} hasCover={!!b.coverFile} />
+                    </div>
+                  ))}
+                </div>
+                <div className="min-w-0">
+                  <span className="badge bg-steel/10 text-steel"><BookIcon className="h-3.5 w-3.5" /> {s.books.length} كتب</span>
+                  <h3 className="mt-2 font-display text-lg font-extrabold text-ink line-clamp-1">{s.title}</h3>
+                  <span className="text-sm font-bold text-shield">استعرض ←</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* الأكثر تحميلًا */}
+      {popular.length > 0 && (
+        <section className="container-x mt-20">
+          <div className="flex items-end justify-between">
+            <div>
+              <h2 className="section-title">الأكثر تحميلًا</h2>
+              <p className="mt-2 text-ink-muted">أكثر ما اختاره القرّاء.</p>
+            </div>
+          </div>
+          <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+            {popular.map((b) => <BookCard key={b.id} book={b} />)}
+          </div>
+        </section>
+      )}
 
       {/* كيف يعمل المتجر */}
       <section className="container-x mt-24">
