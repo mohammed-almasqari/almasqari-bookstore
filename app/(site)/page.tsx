@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import BookCard, { type BookCardData } from "@/components/BookCard";
 import BookCover from "@/components/BookCover";
 import StarRating from "@/components/StarRating";
+import Reveal from "@/components/Reveal";
 import {
   ShieldIcon,
   DownloadIcon,
@@ -204,7 +205,7 @@ export default async function HomePage() {
       {testimonials.length > 0 && (
         <section className="container-x mt-20">
           <h2 className="section-title text-center">ماذا قال القرّاء</h2>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <Reveal className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((t) => (
               <figure key={t.id} className="card p-6">
                 <StarRating value={t.rating} />
@@ -215,14 +216,14 @@ export default async function HomePage() {
                 </figcaption>
               </figure>
             ))}
-          </div>
+          </Reveal>
         </section>
       )}
 
       {/* كيف يعمل المتجر */}
       <section className="container-x mt-24">
         <h2 className="section-title text-center">كيف تحصل على كتابك؟</h2>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <Reveal className="mt-12 grid gap-6 md:grid-cols-3">
           {[
             { icon: <StarIcon className="h-7 w-7" />, t: "اختر كتابك", d: "تصفّح المكتبة واختر الكتاب الذي يناسبك، مجاني أو مدفوع." },
             { icon: <LockIcon className="h-7 w-7" />, t: "ادفع أو سجّل", d: "ادفع بأمان عبر PayPal، أو سجّل اسمك وبريدك للكتب المجانية." },
@@ -239,7 +240,7 @@ export default async function HomePage() {
               <p className="mt-2 leading-8 text-ink-muted">{s.d}</p>
             </div>
           ))}
-        </div>
+        </Reveal>
       </section>
 
       {/* عن المؤلف */}

@@ -53,6 +53,10 @@ export async function POST(req: NextRequest) {
   if ("emailFrom" in body) setStr("email_from", body.emailFrom);
   if ("emailReplyTo" in body) setStr("email_reply_to", body.emailReplyTo);
 
+  // التحليلات
+  if ("gaId" in body) setStr("analytics_ga", body.gaId);
+  if ("pixelId" in body) setStr("analytics_pixel", body.pixelId);
+
   await saveSettings(updates);
   return NextResponse.json({ ok: true });
 }

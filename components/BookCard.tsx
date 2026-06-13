@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BookCover from "./BookCover";
+import WishlistButton from "./WishlistButton";
 import { formatPrice } from "@/lib/format";
 import { DownloadIcon, GiftIcon } from "./icons";
 
@@ -17,28 +18,32 @@ export type BookCardData = {
 
 export default function BookCard({ book }: { book: BookCardData }) {
   return (
-    <Link
-      href={book.isFree ? "/free" : `/books/${book.slug}`}
-      className="card card-hover group flex flex-col overflow-hidden"
-    >
-      <div className="relative aspect-[3/4] overflow-hidden">
-        <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
-          <BookCover bookId={book.id} title={book.title} hasCover={!!book.coverFile} />
-        </div>
-        <div className="absolute right-3 top-3">
-          {book.isFree ? (
-            <span className="badge-free shadow-sm backdrop-blur">
-              <GiftIcon className="h-3.5 w-3.5" /> مجاني
-            </span>
-          ) : (
-            <span className="badge bg-white/90 text-guard shadow-sm backdrop-blur">
-              {book.category || "كتاب"}
-            </span>
-          )}
-        </div>
+    <div className="group relative">
+      <div className="absolute left-3 top-3 z-10">
+        <WishlistButton bookId={book.id} />
       </div>
+      <Link
+        href={book.isFree ? "/free" : `/books/${book.slug}`}
+        className="card card-hover flex h-full flex-col overflow-hidden"
+      >
+        <div className="relative aspect-[3/4] overflow-hidden">
+          <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
+            <BookCover bookId={book.id} title={book.title} hasCover={!!book.coverFile} />
+          </div>
+          <div className="absolute right-3 top-3">
+            {book.isFree ? (
+              <span className="badge-free shadow-sm backdrop-blur">
+                <GiftIcon className="h-3.5 w-3.5" /> مجاني
+              </span>
+            ) : (
+              <span className="badge bg-white/90 text-guard shadow-sm backdrop-blur">
+                {book.category || "كتاب"}
+              </span>
+            )}
+          </div>
+        </div>
 
-      <div className="flex flex-1 flex-col p-5">
+        <div className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-lg font-extrabold leading-snug text-ink line-clamp-2">
           {book.title}
         </h3>
@@ -60,5 +65,6 @@ export default function BookCard({ book }: { book: BookCardData }) {
         </div>
       </div>
     </Link>
+    </div>
   );
 }

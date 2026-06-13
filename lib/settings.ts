@@ -24,6 +24,9 @@ export type StoreSettings = {
   resendApiKey: string;
   emailFrom: string;
   emailReplyTo: string;
+  // التحليلات
+  gaId: string;
+  pixelId: string;
 };
 
 export async function getRawSettings(): Promise<Record<string, string>> {
@@ -56,6 +59,8 @@ export async function getSettings(): Promise<StoreSettings> {
     resendApiKey: s("resend_api_key", env.resend.apiKey),
     emailFrom: s("email_from", env.resend.from),
     emailReplyTo: s("email_reply_to", env.resend.replyTo),
+    gaId: s("analytics_ga"),
+    pixelId: s("analytics_pixel"),
   };
 }
 
@@ -90,5 +95,7 @@ export async function getSettingsForAdmin() {
     resendKeySet: Boolean(st.resendApiKey),
     emailFrom: st.emailFrom,
     emailReplyTo: st.emailReplyTo,
+    gaId: st.gaId,
+    pixelId: st.pixelId,
   };
 }

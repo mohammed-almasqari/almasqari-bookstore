@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Tajawal, Cairo } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { env } from "@/lib/env";
+import Analytics from "@/components/Analytics";
 
 const tajawal = Tajawal({
   subsets: ["arabic"],
@@ -50,6 +52,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
         {children}
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
       </body>
     </html>
   );

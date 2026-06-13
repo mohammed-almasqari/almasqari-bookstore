@@ -11,6 +11,7 @@ const links = [
   { href: "/books", label: "المكتبة" },
   { href: "/series", label: "السلاسل" },
   { href: "/free", label: "كتب مجانية" },
+  { href: "/wishlist", label: "المفضلة" },
   { href: "/account", label: "مكتبتي" },
   { href: "/about", label: "عن المؤلف" },
 ];

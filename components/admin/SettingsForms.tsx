@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SpinnerIcon, CheckIcon, CartIcon, MailIcon, LockIcon } from "@/components/icons";
+import { SpinnerIcon, CheckIcon, CartIcon, MailIcon, LockIcon, ChartIcon } from "@/components/icons";
 
 export type AdminSettings = {
   paypalEnabled: boolean;
@@ -18,6 +18,8 @@ export type AdminSettings = {
   resendKeySet: boolean;
   emailFrom: string;
   emailReplyTo: string;
+  gaId: string;
+  pixelId: string;
 };
 
 function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange: (v: boolean) => void; label: string; hint?: string }) {
@@ -59,6 +61,8 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
     resendApiKey: "",
     emailFrom: initial.emailFrom,
     emailReplyTo: initial.emailReplyTo,
+    gaId: initial.gaId,
+    pixelId: initial.pixelId,
   });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -215,6 +219,27 @@ export default function SettingsForms({ initial }: { initial: AdminSettings }) {
             )}
           </div>
         </div>
+      </section>
+
+      {/* التحليلات */}
+      <section className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-ink/5 text-ink"><ChartIcon className="h-5 w-5" /></span>
+          <h2 className="font-display text-lg font-extrabold text-ink">التحليلات</h2>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label">Google Analytics (Measurement ID)</label>
+            <input className="input font-mono text-sm" dir="ltr" value={f.gaId} onChange={(e) => upd("gaId", e.target.value)} placeholder="G-XXXXXXXXXX" />
+          </div>
+          <div>
+            <label className="label">Meta Pixel ID</label>
+            <input className="input font-mono text-sm" dir="ltr" value={f.pixelId} onChange={(e) => upd("pixelId", e.target.value)} placeholder="123456789012345" />
+          </div>
+        </div>
+        <Instructions title="كيف تربط التحليلات؟">
+          من <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" className="font-bold text-steel underline">Google Analytics</a> أنشئ Property واحصل على معرّف القياس (يبدأ بـ G-). وللإعلانات، انسخ Meta Pixel ID من مدير أحداث فيسبوك. اتركها فارغة لتعطيل التتبّع.
+        </Instructions>
       </section>
 
       {/* حفظ */}
